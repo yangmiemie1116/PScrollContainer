@@ -1,0 +1,16 @@
+PODS:
+  - PScrollContainer (0.0.1)
+
+DEPENDENCIES:
+  - PScrollContainer (from `./`)
+
+EXTERNAL SOURCES:
+  PScrollContainer:
+    :path: ./
+
+SPEC CHECKSUMS:
+  PScrollContainer: d33453b8fee5217159a54d00ba53feb737f27ae4
+
+PODFILE CHECKSUM: fd5231c7d7e1c5262071c29cb382b5ced88ebe72
+
+COCOAPODS: 1.2.1.beta.1
