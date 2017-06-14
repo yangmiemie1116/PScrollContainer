@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0D610ACE1EF1190F0059566C /* ConfigObj.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D610ACD1EF1190F0059566C /* ConfigObj.m */; };
 		0D742C4B1EE94ADF002E6E10 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D742C4A1EE94ADF002E6E10 /* main.m */; };
 		0D742C4E1EE94ADF002E6E10 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D742C4D1EE94ADF002E6E10 /* AppDelegate.m */; };
 		0D742C511EE94ADF002E6E10 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D742C501EE94ADF002E6E10 /* ViewController.m */; };
@@ -17,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0D610ACC1EF1190F0059566C /* ConfigObj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigObj.h; sourceTree = "<group>"; };
+		0D610ACD1EF1190F0059566C /* ConfigObj.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigObj.m; sourceTree = "<group>"; };
 		0D742C461EE94ADF002E6E10 /* PSCrollContainerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PSCrollContainerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D742C4A1EE94ADF002E6E10 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		0D742C4C1EE94ADF002E6E10 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -27,6 +30,11 @@
 		0D742C551EE94ADF002E6E10 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0D742C581EE94ADF002E6E10 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0D742C5A1EE94ADF002E6E10 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0D8D81851EEA2DD400BFC82A /* PScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PScrollViewController.h; sourceTree = "<group>"; };
+		0D8D81861EEA2DD400BFC82A /* PScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PScrollViewController.m; sourceTree = "<group>"; };
+		0D8D81881EEA32E300BFC82A /* PScrollViewConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PScrollViewConfig.h; sourceTree = "<group>"; };
+		0D8D81891EEA3F3700BFC82A /* PSCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSCollectionCell.h; sourceTree = "<group>"; };
+		0D8D818A1EEA3F3700BFC82A /* PSCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSCollectionCell.m; sourceTree = "<group>"; };
 		0F5B7640E8498206C60F31C5 /* Pods-PSCrollContainerDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PSCrollContainerDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-PSCrollContainerDemo/Pods-PSCrollContainerDemo.release.xcconfig"; sourceTree = "<group>"; };
 		2D4779FDFC996FC5E2DBAA84 /* libPods-PSCrollContainerDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PSCrollContainerDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D6CA0FA9426982244BD70FF /* Pods-PSCrollContainerDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PSCrollContainerDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PSCrollContainerDemo/Pods-PSCrollContainerDemo.debug.xcconfig"; sourceTree = "<group>"; };
@@ -70,6 +78,8 @@
 				0D742C4D1EE94ADF002E6E10 /* AppDelegate.m */,
 				0D742C4F1EE94ADF002E6E10 /* ViewController.h */,
 				0D742C501EE94ADF002E6E10 /* ViewController.m */,
+				0D610ACC1EF1190F0059566C /* ConfigObj.h */,
+				0D610ACD1EF1190F0059566C /* ConfigObj.m */,
 				0D742C521EE94ADF002E6E10 /* Main.storyboard */,
 				0D742C551EE94ADF002E6E10 /* Assets.xcassets */,
 				0D742C571EE94ADF002E6E10 /* LaunchScreen.storyboard */,
@@ -90,6 +100,11 @@
 		0D742C601EE94BA0002E6E10 /* PScrollContainer */ = {
 			isa = PBXGroup;
 			children = (
+				0D8D81851EEA2DD400BFC82A /* PScrollViewController.h */,
+				0D8D81861EEA2DD400BFC82A /* PScrollViewController.m */,
+				0D8D81891EEA3F3700BFC82A /* PSCollectionCell.h */,
+				0D8D818A1EEA3F3700BFC82A /* PSCollectionCell.m */,
+				0D8D81881EEA32E300BFC82A /* PScrollViewConfig.h */,
 			);
 			path = PScrollContainer;
 			sourceTree = "<group>";
@@ -236,6 +251,7 @@
 				0D742C511EE94ADF002E6E10 /* ViewController.m in Sources */,
 				0D742C4E1EE94ADF002E6E10 /* AppDelegate.m in Sources */,
 				0D742C4B1EE94ADF002E6E10 /* main.m in Sources */,
+				0D610ACE1EF1190F0059566C /* ConfigObj.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

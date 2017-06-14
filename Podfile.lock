@@ -1,16 +1,28 @@
 PODS:
-  - PScrollContainer (0.0.1)
+  - Masonry (1.0.2)
+  - MJRefresh (3.1.12)
+  - PScrollContainer (0.0.1):
+    - Masonry
+    - MJRefresh
+    - UITableView+FDTemplateLayoutCell
+  - Reveal-SDK (8)
+  - UITableView+FDTemplateLayoutCell (1.6)
 
 DEPENDENCIES:
   - PScrollContainer (from `./`)
+  - Reveal-SDK
 
 EXTERNAL SOURCES:
   PScrollContainer:
     :path: ./
 
 SPEC CHECKSUMS:
-  PScrollContainer: d33453b8fee5217159a54d00ba53feb737f27ae4
+  Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
+  MJRefresh: b96cdb21c4aa75a7b07654311ab2f315c497e806
+  PScrollContainer: 8cfc71da924c18b6837790343c9ca4096faf06fb
+  Reveal-SDK: 43be4e662864e937960d0d04d005135e29c4e53b
+  UITableView+FDTemplateLayoutCell: 5c949b4a5059c404b442926c0e80f81d10a2d66f
 
-PODFILE CHECKSUM: fd5231c7d7e1c5262071c29cb382b5ced88ebe72
+PODFILE CHECKSUM: bf5d6d51f8863f11e2679624f1dd1d20d5b2507d
 
 COCOAPODS: 1.2.1.beta.1
