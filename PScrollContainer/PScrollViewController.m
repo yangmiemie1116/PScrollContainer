@@ -160,11 +160,13 @@
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PSCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(PSCollectionCell.class) forIndexPath:indexPath];
-    if (self.createTableView) {
-        self.createTableView();
+    BOOL hasContentView = [cell.contentView.subviews containsObject:self.tableView];
+    if (!hasContentView) {
+        if (self.createTableView) {
+            self.createTableView();
+        }
+        [cell.contentView addSubview:self.tableView];
     }
-
-    [cell.contentView addSubview:self.tableView];
     self.tableView.frame = CGRectZero;
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.equalTo(@0);

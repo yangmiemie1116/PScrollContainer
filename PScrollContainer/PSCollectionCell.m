@@ -16,6 +16,7 @@
 
 - (void)prepareForReuse {
     [super prepareForReuse];
+    [self.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
 }
 
 @end
