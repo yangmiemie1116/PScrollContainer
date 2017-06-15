@@ -14,15 +14,17 @@
 @property (nonatomic, strong) UIScrollView *topScrollView;
 @property (nonatomic, strong) UIView *bottomLine;
 @property (nonatomic, strong) UIStackView *stackView;
-@property (nonatomic, copy) void(^block)(NSInteger page);
+@property (nonatomic, copy) void(^scrollEvent)(NSInteger page);
+@property (nonatomic, copy) void(^createTableView)();
 @end
 
 @implementation PScrollViewController
 
-- (instancetype)initWithConfig:(void (^)(NSInteger))block {
+- (instancetype)initScrollEvent:(void (^)(NSInteger))scrollEvent createTableView:(void (^)())createTableView {
     self = [super init];
     if (self) {
-        self.block = block;
+        self.scrollEvent = scrollEvent;
+        self.createTableView = createTableView;
     }
     return self;
 }
@@ -147,8 +149,8 @@
 }
 
 - (void)executeBolck:(NSInteger)page {
-    if (self.block) {
-        self.block(page);
+    if (self.scrollEvent) {
+        self.scrollEvent(page);
     }
 }
 
@@ -158,20 +160,21 @@
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     PSCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(PSCollectionCell.class) forIndexPath:indexPath];
-    BOOL hasContentView = [cell.subviews containsObject:cell.contentView];
-    if (!hasContentView) {
-        [cell addSubview:cell.contentView];
+    if (self.createTableView) {
+        self.createTableView();
     }
+
     [cell.contentView addSubview:self.tableView];
     self.tableView.frame = CGRectZero;
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(cell.contentView);
+        make.top.left.equalTo(@0);
+        make.width.height.equalTo(cell.contentView);
     }];
     return cell;
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(self.view.bounds.size.width, self.view.bounds.size.height-[self.config topNavigationHeight]);
+    return CGSizeMake(self.view.bounds.size.width, collectionView.frame.size.height);
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

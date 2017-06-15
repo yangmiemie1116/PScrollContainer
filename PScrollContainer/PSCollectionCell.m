@@ -16,10 +16,6 @@
 
 - (void)prepareForReuse {
     [super prepareForReuse];
-    BOOL hasContentView = [self.subviews containsObject:self.contentView];
-    if (hasContentView) {
-        [self.contentView removeFromSuperview];
-    }
 }
 
 @end
