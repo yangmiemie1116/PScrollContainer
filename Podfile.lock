@@ -1,7 +1,9 @@
 PODS:
+  - FDStackView (1.0)
   - Masonry (1.0.2)
   - MJRefresh (3.1.12)
   - PScrollContainer (0.0.1):
+    - FDStackView
     - Masonry
     - MJRefresh
     - UITableView+FDTemplateLayoutCell
@@ -17,9 +19,10 @@ EXTERNAL SOURCES:
     :path: ./
 
 SPEC CHECKSUMS:
+  FDStackView: 3a4bbe0ce9c35e974246a585168b9da8c32213f1
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   MJRefresh: b96cdb21c4aa75a7b07654311ab2f315c497e806
-  PScrollContainer: 8cfc71da924c18b6837790343c9ca4096faf06fb
+  PScrollContainer: f26a40fc627dec7ad9a07f4735820dc8dd28d979
   Reveal-SDK: 43be4e662864e937960d0d04d005135e29c4e53b
   UITableView+FDTemplateLayoutCell: 5c949b4a5059c404b442926c0e80f81d10a2d66f
 

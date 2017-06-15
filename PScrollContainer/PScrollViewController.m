@@ -14,12 +14,17 @@
 @property (nonatomic, strong) UIScrollView *topScrollView;
 @property (nonatomic, strong) UIView *bottomLine;
 @property (nonatomic, strong) UIStackView *stackView;
+@property (nonatomic, copy) void(^block)(NSInteger page);
 @end
 
 @implementation PScrollViewController
 
-- (void)dealloc {
-    
+- (instancetype)initWithConfig:(void (^)(NSInteger))block {
+    self = [super init];
+    if (self) {
+        self.block = block;
+    }
+    return self;
 }
 
 - (void)viewDidLoad {
@@ -54,6 +59,8 @@
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         [button setTitle:obj forState:UIControlStateNormal];
         [button setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        button.tag = idx;
+        [button addTarget:self action:@selector(naviButtonDown:) forControlEvents:UIControlEventTouchUpInside];
         [self.stackView addArrangedSubview:button];
         [button mas_makeConstraints:^(MASConstraintMaker *make) {
             make.height.equalTo(self.topScrollView).offset(-[self.config topLineHeight]);
@@ -62,7 +69,7 @@
     UIButton *sub_button = self.stackView.arrangedSubviews[0];
     self.bottomLine = [UIView new];
     self.bottomLine.backgroundColor = [self.config topLineColor];
-    [self.view addSubview:self.bottomLine];
+    [self.topScrollView addSubview:self.bottomLine];
     [self.bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(sub_button);
         make.width.equalTo(sub_button);
@@ -87,19 +94,61 @@
     }];
 }
 
+- (void)naviButtonDown:(UIButton*)button {
+    NSInteger tag = button.tag;
+    [self.collectionView setContentOffset:CGPointMake(tag*self.collectionView.frame.size.width, 0) animated:YES];
+    [self executeBolck:tag];
+}
+
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (scrollView == self.collectionView) {
-        NSInteger max_index = [self.config scrollNavigationTitles].count-1;
         CGFloat offset_x = scrollView.contentOffset.x;
         NSInteger index = offset_x / self.view.bounds.size.width;
-        if (index >= 0 && index < max_index) {
-            UIButton *des_button = self.stackView.arrangedSubviews[index+1];
-            CGFloat center_x = des_button.center.x;
-            CGFloat center_offset = center_x - self.view.center.x;
-            if (center_offset > 0) {
-                [self.topScrollView setContentOffset:CGPointMake(center_offset, 0) animated:YES];
+        if (index < 0) {
+            index = 0;
+        } else if (index >= [self.config scrollNavigationTitles].count-2) {
+            index = [self.config scrollNavigationTitles].count-2;
+        }
+        CGFloat relative_x = offset_x - index * self.view.bounds.size.width;
+        CGFloat offset_percent = (CGFloat)(relative_x / self.view.bounds.size.width);
+        UIButton *current_button = self.stackView.arrangedSubviews[index];
+        UIButton *next_button = self.stackView.arrangedSubviews[index+1];
+        CGFloat center_offset = next_button.center.x - current_button.center.x;
+        CGFloat width_offset = next_button.frame.size.width - current_button.frame.size.width;
+        [self.bottomLine mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.equalTo(current_button).offset(center_offset*offset_percent);
+            make.width.equalTo(@(current_button.frame.size.width+width_offset*offset_percent));
+            make.height.equalTo(@([self.config topLineHeight]));
+            make.bottom.equalTo(self.topScrollView);
+        }];
+        
+        CGFloat mod = fmod(offset_x, self.view.frame.size.width);
+        if (mod==0) {
+            UIButton *current_button = self.stackView.arrangedSubviews[index];
+            CGFloat center_x = current_button.center.x;
+            CGFloat des_center = center_x - self.view.center.x;
+            CGFloat max_offset = self.topScrollView.contentSize.width - CGRectGetWidth(self.topScrollView.frame);
+            if (des_center > max_offset) {
+                des_center = max_offset;
+            }
+            if (des_center > 0) {
+                [self.topScrollView setContentOffset:CGPointMake(des_center, 0) animated:YES];
+            } else {
+                [self.topScrollView setContentOffset:CGPointMake(0, 0) animated:YES];
             }
         }
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    CGFloat offset_x = scrollView.contentOffset.x;
+    NSInteger page = offset_x / self.view.bounds.size.width;
+    [self executeBolck:page];
+}
+
+- (void)executeBolck:(NSInteger)page {
+    if (self.block) {
+        self.block(page);
     }
 }
 
@@ -108,7 +157,16 @@
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(PSCollectionCell.class) forIndexPath:indexPath];
+    PSCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(PSCollectionCell.class) forIndexPath:indexPath];
+    BOOL hasContentView = [cell.subviews containsObject:cell.contentView];
+    if (!hasContentView) {
+        [cell addSubview:cell.contentView];
+    }
+    [cell.contentView addSubview:self.tableView];
+    self.tableView.frame = CGRectZero;
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(cell.contentView);
+    }];
     return cell;
 }
 

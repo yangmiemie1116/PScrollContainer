@@ -9,7 +9,7 @@
 #import "ConfigObj.h"
 @implementation ConfigObj
 - (NSArray<NSString *>*)scrollNavigationTitles {
-    return @[@"我关注的", @"最近下单",@"我看过的",@"粉丝",@"黑名单"];
+    return @[@"我关注的", @"最近下单",@"我看过的",@"粉丝",@"黑名单",@"我看过的",@"粉丝",@"黑名单"];
 }
 
 - (CGFloat)topNavigationHeight {

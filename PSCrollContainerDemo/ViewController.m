@@ -30,7 +30,9 @@
 }
 
 - (void)buttonDown {
-    PScrollViewController *ctr = [PScrollViewController new];
+    PScrollViewController *ctr = [[PScrollViewController alloc] initWithConfig:^(NSInteger page) {
+        
+    }];
     ctr.config = [[ConfigObj alloc] init];
     [self.navigationController pushViewController:ctr animated:YES];
     

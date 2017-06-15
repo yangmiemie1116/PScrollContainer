@@ -10,4 +10,6 @@
 #import "PScrollViewConfig.h"
 @interface PScrollViewController : UIViewController
 @property (nonatomic, strong, nonnull) id<PScrollViewConfig> config;
+@property (nonatomic, strong, nonnull) UITableView *tableView;
+- (instancetype _Nullable )initWithConfig:(void(^_Nullable)(NSInteger page))block;
 @end

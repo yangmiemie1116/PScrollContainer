@@ -17,4 +17,5 @@ Pod::Spec.new do |s|
   s.dependency 'Masonry'
   s.dependency 'MJRefresh'
   s.dependency 'UITableView+FDTemplateLayoutCell'
+  s.dependency 'FDStackView'
 end
