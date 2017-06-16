@@ -11,8 +11,8 @@
 #import "PScrollViewController.h"
 #import "ConfigObj.h"
 @interface SecViewController ()<UITableViewDataSource, UITableViewDelegate>
-@property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) PScrollViewController *scrollContainer;
+@property (nonatomic, strong) NSMutableArray *dataArray;
 @end
 
 @implementation SecViewController
@@ -20,26 +20,34 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"通讯录";
+    NSMutableArray *originArr = @[@[@"1",@"1",@"1",@"1",@"1"], @[@"2",@"2",@"2",@"2",@"2"], @[@"3",@"3",@"3",@"3",@"3"], @[@"4",@"4",@"4",@"4",@"4"], @[@"5",@"5",@"5",@"5",@"5"]].mutableCopy;
+    self.dataArray = [originArr[0] mutableCopy];
     self.view.backgroundColor = [UIColor whiteColor];
     self.automaticallyAdjustsScrollViewInsets = NO;
-    PScrollViewController *scrollContainer = [[PScrollViewController alloc] initScrollEvent:^(NSInteger page) {
-        [self.tableView reloadData];
-    } createTableView:^UIView * _Nonnull{
-        self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-        self.tableView.backgroundColor = [UIColor clearColor];
-        [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cellID"];
-        self.tableView.delegate = self;
-        self.tableView.dataSource = self;
-        self.tableView.tableFooterView = [UIView new];
-        return self.tableView;
-    }];
+    PScrollViewController *scrollContainer = [[PScrollViewController alloc] init];
+    scrollContainer.createTableView = ^UITableView * _Nonnull(NSInteger index) {
+        self.dataArray = [originArr[index] mutableCopy];
+        UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+        tableView.backgroundColor = [UIColor clearColor];
+        [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cellID"];
+        tableView.delegate = self;
+        tableView.dataSource = self;
+        tableView.tableFooterView = [UIView new];
+        return tableView;
+    };
+    scrollContainer.reloadData = ^(UITableView * _Nonnull tableView, NSInteger index) {
+        [self.dataArray removeAllObjects];
+        [tableView reloadData];
+        self.dataArray = [originArr[index] mutableCopy];
+        [tableView reloadData];
+    };
     scrollContainer.config = [[ConfigObj alloc] init];
     [self addChildViewController:scrollContainer];
     [self.view addSubview:scrollContainer.view];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 15;
+    return self.dataArray.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -48,7 +56,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cellID"];
-    cell.textLabel.text = [NSString stringWithFormat:@"index %@", @(indexPath.row)];
+    cell.textLabel.text = [NSString stringWithFormat:@"index %@", self.dataArray[indexPath.row]];
     cell.backgroundColor = [UIColor clearColor];
     return cell;
 }
@@ -57,15 +65,5 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

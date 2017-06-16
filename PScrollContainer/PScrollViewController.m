@@ -20,8 +20,6 @@ alpha:1.0]
 @property (nonatomic, strong) UIView *bottomLine;
 @property (nonatomic, strong) UIStackView *stackView;
 @property (nonatomic, strong) UIView *stateLine;
-@property (nonatomic, copy) void(^scrollEvent)(NSInteger page);
-@property (nonatomic, copy) UIView* (^createView)();
 @end
 
 @implementation PScrollViewController
@@ -32,21 +30,13 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     return fitInput * multiple;
 }
 
-- (instancetype)initScrollEvent:(void (^)(NSInteger))scrollEvent createTableView:(UIView* (^)())createView {
-    self = [super init];
-    if (self) {
-        self.scrollEvent = scrollEvent;
-        self.createView = createView;
-    }
-    return self;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupView];
 }
 
 - (void)setupView {
+    //MARK:init top category scrollView
     self.topScrollView = [[UIScrollView alloc] init];
     self.topScrollView.showsHorizontalScrollIndicator = NO;
     [self.view addSubview:self.topScrollView];
@@ -137,6 +127,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         make.bottom.equalTo(self.topScrollView);
     }];
     
+    //MARK: init collectionView
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     layout.minimumLineSpacing = 0;
@@ -165,9 +156,9 @@ CGFloat AdaptNorm(CGFloat fitInput) {
 - (void)naviButtonDown:(UIButton*)button {
     NSInteger tag = button.tag;
     [self.collectionView setContentOffset:CGPointMake(tag*self.collectionView.frame.size.width, 0) animated:YES];
-    [self executeBolck:tag];
 }
 
+#pragma mark - scrollView delegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (scrollView == self.collectionView) {
         CGFloat lineHeight = 3;
@@ -224,18 +215,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }
 }
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    CGFloat offset_x = scrollView.contentOffset.x;
-    NSInteger page = offset_x / self.view.bounds.size.width;
-    [self executeBolck:page];
-}
-
-- (void)executeBolck:(NSInteger)page {
-    if (self.scrollEvent) {
-        self.scrollEvent(page);
-    }
-}
-
+#pragma mark - collectionView delegate && dataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return [self.config categoryTitles].count;
 }
@@ -247,11 +227,14 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     [cell.contentView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([obj isKindOfClass:[UITableView class]]) {
             hasContentView = YES;
+            if (self.reloadData) {
+                self.reloadData(obj, indexPath.row);
+            }
         }
     }];
     if (!hasContentView) {
-        if (self.createView) {
-            UIView *tableView = self.createView();
+        if (self.createTableView) {
+            UITableView *tableView = self.createTableView(indexPath.row);
             [cell.contentView addSubview:tableView];
             tableView.frame = CGRectZero;
             [tableView mas_makeConstraints:^(MASConstraintMaker *make) {
