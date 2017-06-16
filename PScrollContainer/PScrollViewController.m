@@ -26,7 +26,7 @@ alpha:1.0]
 
 @implementation PScrollViewController
 
-CGFloat FitOut(CGFloat fitInput) {
+CGFloat AdaptNorm(CGFloat fitInput) {
     CGRect bounds = [[UIScreen mainScreen] bounds];
     CGFloat multiple = bounds.size.width/Iphone6Width_Sheep;
     return fitInput * multiple;
@@ -50,7 +50,7 @@ CGFloat FitOut(CGFloat fitInput) {
     self.topScrollView = [[UIScrollView alloc] init];
     self.topScrollView.showsHorizontalScrollIndicator = NO;
     [self.view addSubview:self.topScrollView];
-    CGFloat scrollHeight = FitOut(46);
+    CGFloat scrollHeight = AdaptNorm(46);
     if ([self.config respondsToSelector:@selector(categoryHeight)]) {
         scrollHeight = [self.config categoryHeight];
     }
@@ -60,8 +60,8 @@ CGFloat FitOut(CGFloat fitInput) {
         make.height.equalTo(@(scrollHeight));
     }];
     
-    CGFloat leftMargin = FitOut(14);
-    CGFloat rightMargin = FitOut(14);
+    CGFloat leftMargin = AdaptNorm(14);
+    CGFloat rightMargin = AdaptNorm(14);
     if ([self.config respondsToSelector:@selector(left_margin)]) {
         leftMargin = [self.config left_margin];
     }
@@ -71,7 +71,7 @@ CGFloat FitOut(CGFloat fitInput) {
     self.stackView = [[UIStackView alloc] init];
     self.stackView.axis = UILayoutConstraintAxisHorizontal;
     self.stackView.distribution = UIStackViewDistributionFillProportionally;
-    CGFloat gap = FitOut(25);
+    CGFloat gap = AdaptNorm(25);
     if ([self.config respondsToSelector:@selector(gap_margin)]) {
         gap = [self.config gap_margin];
     }
@@ -107,7 +107,7 @@ CGFloat FitOut(CGFloat fitInput) {
         if ([self.config respondsToSelector:@selector(textFont)]) {
             button.titleLabel.font = [self.config textFont];
         } else {
-            button.titleLabel.font = [UIFont systemFontOfSize:FitOut(14)];
+            button.titleLabel.font = [UIFont systemFontOfSize:AdaptNorm(14)];
         }
         UIColor *normal = RGB_Sheep(0x9b9b99);
         if ([self.config respondsToSelector:@selector(textNormalColor)]) {
