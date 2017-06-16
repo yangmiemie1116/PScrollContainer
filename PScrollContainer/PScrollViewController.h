@@ -10,6 +10,5 @@
 #import "PScrollViewConfig.h"
 @interface PScrollViewController : UIViewController
 @property (nonatomic, strong, nonnull) id<PScrollViewConfig> config;
-@property (nonatomic, strong, nonnull) UITableView *tableView;
-- (instancetype _Nullable )initScrollEvent:(void(^_Nullable)(NSInteger page))scrollEvent createTableView:(void(^_Nullable)())createTableView;
+- (instancetype _Nullable )initScrollEvent:(void(^_Nullable)(NSInteger page))scrollEvent createTableView:(UIView*_Nonnull(^_Nullable)())createTableView;
 @end

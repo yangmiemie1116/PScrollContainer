@@ -7,85 +7,145 @@
 //
 
 #import "PScrollViewController.h"
-#import "PSCollectionCell.h"
 #import "Masonry.h"
+#define MicIphone6Width 375.0f
+#define RGBHex(rgbValue) \
+[UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0x00FF00) >>  8))/255.0 \
+blue:((float)((rgbValue & 0x0000FF) >>  0))/255.0 \
+alpha:1.0]
 @interface PScrollViewController ()<UICollectionViewDelegate, UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) UIScrollView *topScrollView;
 @property (nonatomic, strong) UIView *bottomLine;
 @property (nonatomic, strong) UIStackView *stackView;
+@property (nonatomic, strong) UIView *stateLine;
 @property (nonatomic, copy) void(^scrollEvent)(NSInteger page);
-@property (nonatomic, copy) void(^createTableView)();
+@property (nonatomic, copy) UIView* (^createView)();
 @end
 
 @implementation PScrollViewController
 
-- (instancetype)initScrollEvent:(void (^)(NSInteger))scrollEvent createTableView:(void (^)())createTableView {
+CGFloat FitOut(CGFloat fitInput) {
+    CGRect bounds = [[UIScreen mainScreen] bounds];
+    CGFloat multiple = bounds.size.width/MicIphone6Width;
+    return fitInput * multiple;
+}
+
+- (instancetype)initScrollEvent:(void (^)(NSInteger))scrollEvent createTableView:(UIView* (^)())createView {
     self = [super init];
     if (self) {
         self.scrollEvent = scrollEvent;
-        self.createTableView = createTableView;
+        self.createView = createView;
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = [self.config navigaitonBarTitle];
-    self.view.backgroundColor = [UIColor grayColor];
     [self setupView];
 }
 
 - (void)setupView {
-    self.automaticallyAdjustsScrollViewInsets = NO;
     self.topScrollView = [[UIScrollView alloc] init];
-    self.topScrollView.backgroundColor = [UIColor whiteColor];
     self.topScrollView.showsHorizontalScrollIndicator = NO;
     [self.view addSubview:self.topScrollView];
+    CGFloat scrollHeight = FitOut(46);
+    if ([self.config respondsToSelector:@selector(categoryHeight)]) {
+        scrollHeight = [self.config categoryHeight];
+    }
     [self.topScrollView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.equalTo(self.view);
         make.top.equalTo(@64);
-        make.height.equalTo(@([self.config topNavigationHeight]));
+        make.height.equalTo(@(scrollHeight));
     }];
+    
+    CGFloat leftMargin = FitOut(14);
+    CGFloat rightMargin = FitOut(14);
+    if ([self.config respondsToSelector:@selector(left_margin)]) {
+        leftMargin = [self.config left_margin];
+    }
+    if ([self.config respondsToSelector:@selector(right_margin)]) {
+        rightMargin = [self.config right_margin];
+    }
     self.stackView = [[UIStackView alloc] init];
     self.stackView.axis = UILayoutConstraintAxisHorizontal;
     self.stackView.distribution = UIStackViewDistributionFillProportionally;
-    self.stackView.spacing = [self.config stack_space];
+    CGFloat gap = FitOut(25);
+    if ([self.config respondsToSelector:@selector(gap_margin)]) {
+        gap = [self.config gap_margin];
+    }
+    self.stackView.spacing = gap;
     [self.topScrollView addSubview:self.stackView];
     [self.stackView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.topScrollView).offset([self.config stack_space]);
-        make.right.equalTo(self.topScrollView).offset(-[self.config stack_space]);
+        make.left.equalTo(self.topScrollView).offset(leftMargin);
+        make.right.equalTo(self.topScrollView).offset(-rightMargin);
         make.top.bottom.equalTo(self.topScrollView);
     }];
-    [[self.config scrollNavigationTitles] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    
+    self.bottomLine = [UIView new];
+    if ([self.config respondsToSelector:@selector(separatorColor)]) {
+        self.bottomLine.backgroundColor = [self.config separateLineColor];
+    } else {
+        self.bottomLine.backgroundColor = RGBHex(0xe5e5e5);
+    }
+    [self.view addSubview:self.bottomLine];
+    [self.bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.equalTo(self.view);
+        make.height.equalTo(@0.5);
+        make.bottom.equalTo(self.topScrollView);
+    }];
+    
+    CGFloat lineHeight = 3;
+    if ([self.config respondsToSelector:@selector(highlightLineHeight)]) {
+        lineHeight = [self.config highlightLineHeight];
+    }
+    [[self.config categoryTitles] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         [button setTitle:obj forState:UIControlStateNormal];
-        [button setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         button.tag = idx;
+        if ([self.config respondsToSelector:@selector(textFont)]) {
+            button.titleLabel.font = [self.config textFont];
+        } else {
+            button.titleLabel.font = [UIFont systemFontOfSize:FitOut(14)];
+        }
+        UIColor *normal = RGBHex(0x9b9b99);
+        if ([self.config respondsToSelector:@selector(textNormalColor)]) {
+            normal = [self.config textNormalColor];
+        }
+        if (idx == 0) {
+            normal = RGBHex(0x4c4c4c);
+            if ([self.config respondsToSelector:@selector(textHighLightColor)]) {
+                normal = [self.config textHighLightColor];
+            }
+        }
+        [button setTitleColor:normal forState:UIControlStateNormal];
         [button addTarget:self action:@selector(naviButtonDown:) forControlEvents:UIControlEventTouchUpInside];
         [self.stackView addArrangedSubview:button];
         [button mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.height.equalTo(self.topScrollView).offset(-[self.config topLineHeight]);
+            make.height.equalTo(self.topScrollView).offset(-lineHeight);
         }];
     }];
     UIButton *sub_button = self.stackView.arrangedSubviews[0];
-    self.bottomLine = [UIView new];
-    self.bottomLine.backgroundColor = [self.config topLineColor];
-    [self.topScrollView addSubview:self.bottomLine];
-    [self.bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.stateLine = [UIView new];
+    self.stateLine.backgroundColor = [self.config respondsToSelector:@selector(highlightLineColor)] ? [self.config highlightLineColor] : RGBHex(0xffdb4c);
+    [self.topScrollView addSubview:self.stateLine];
+    [self.stateLine mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(sub_button);
         make.width.equalTo(sub_button);
-        make.height.equalTo(@([self.config topLineHeight]));
+        make.height.equalTo(@(lineHeight));
         make.bottom.equalTo(self.topScrollView);
     }];
+    
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     layout.minimumLineSpacing = 0;
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-    [self.collectionView registerClass:[PSCollectionCell class] forCellWithReuseIdentifier:NSStringFromClass(PSCollectionCell.class)];
+    self.collectionView.backgroundColor = [UIColor clearColor];
+    self.collectionView.scrollEnabled = [self.config respondsToSelector:@selector(enableScroll)] ? [self.config enableScroll] : YES;
+    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:NSStringFromClass(UICollectionViewCell.class)];
     self.collectionView.pagingEnabled = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
-    self.collectionView.backgroundColor = [UIColor brownColor];
     [self.view addSubview:self.collectionView];
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
@@ -94,6 +154,12 @@
         make.top.equalTo(self.topScrollView.mas_bottom);
         make.bottom.equalTo(self.view);
     }];
+    NSInteger page = 0;
+    if ([self.config respondsToSelector:@selector(selectPage)]) {
+        page = [self.config selectPage] > ([self.config categoryTitles].count-1) ? 0 : [self.config selectPage];
+    }
+    [self.view layoutIfNeeded];
+    [self.collectionView setContentOffset:CGPointMake(page * self.collectionView.frame.size.width, 0)];
 }
 
 - (void)naviButtonDown:(UIButton*)button {
@@ -104,12 +170,16 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (scrollView == self.collectionView) {
+        CGFloat lineHeight = 3;
+        if ([self.config respondsToSelector:@selector(highlightLineHeight)]) {
+            lineHeight = [self.config highlightLineHeight];
+        }
         CGFloat offset_x = scrollView.contentOffset.x;
         NSInteger index = offset_x / self.view.bounds.size.width;
         if (index < 0) {
             index = 0;
-        } else if (index >= [self.config scrollNavigationTitles].count-2) {
-            index = [self.config scrollNavigationTitles].count-2;
+        } else if (index >= [self.config categoryTitles].count-2) {
+            index = [self.config categoryTitles].count-2;
         }
         CGFloat relative_x = offset_x - index * self.view.bounds.size.width;
         CGFloat offset_percent = (CGFloat)(relative_x / self.view.bounds.size.width);
@@ -117,18 +187,30 @@
         UIButton *next_button = self.stackView.arrangedSubviews[index+1];
         CGFloat center_offset = next_button.center.x - current_button.center.x;
         CGFloat width_offset = next_button.frame.size.width - current_button.frame.size.width;
-        [self.bottomLine mas_remakeConstraints:^(MASConstraintMaker *make) {
+        [self.stateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(current_button).offset(center_offset*offset_percent);
             make.width.equalTo(@(current_button.frame.size.width+width_offset*offset_percent));
-            make.height.equalTo(@([self.config topLineHeight]));
+            make.height.equalTo(@(lineHeight));
             make.bottom.equalTo(self.topScrollView);
         }];
         
         CGFloat mod = fmod(offset_x, self.view.frame.size.width);
         if (mod==0) {
-            UIButton *current_button = self.stackView.arrangedSubviews[index];
-            CGFloat center_x = current_button.center.x;
-            CGFloat des_center = center_x - self.view.center.x;
+            NSInteger final_index = offset_x / self.view.bounds.size.width;
+            [self.stackView.arrangedSubviews enumerateObjectsUsingBlock:^(__kindof UIButton * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ([self.config respondsToSelector:@selector(textNormalColor)]) {
+                    [obj setTitleColor:[self.config textNormalColor] forState:UIControlStateNormal];
+                } else {
+                    [obj setTitleColor:RGBHex(0x9b9b99) forState:UIControlStateNormal];
+                }
+            }];
+            UIButton *now_button = self.stackView.arrangedSubviews[final_index];
+            if ([self.config respondsToSelector:@selector(textHighLightColor)]) {
+                [now_button setTitleColor:[self.config textHighLightColor] forState:UIControlStateNormal];
+            } else {
+                [now_button setTitleColor:RGBHex(0x4c4c4c) forState:UIControlStateNormal];
+            }
+            CGFloat des_center = now_button.frame.origin.x - (self.view.center.x-now_button.frame.size.width/2)+self.stackView.frame.origin.x;
             CGFloat max_offset = self.topScrollView.contentSize.width - CGRectGetWidth(self.topScrollView.frame);
             if (des_center > max_offset) {
                 des_center = max_offset;
@@ -155,23 +237,30 @@
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [self.config scrollNavigationTitles].count;
+    return [self.config categoryTitles].count;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    PSCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(PSCollectionCell.class) forIndexPath:indexPath];
-    BOOL hasContentView = [cell.contentView.subviews containsObject:self.tableView];
-    if (!hasContentView) {
-        if (self.createTableView) {
-            self.createTableView();
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(UICollectionViewCell.class) forIndexPath:indexPath];
+    cell.backgroundColor = [UIColor clearColor];
+    __block BOOL hasContentView = NO;
+    [cell.contentView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj isKindOfClass:[UITableView class]]) {
+            hasContentView = YES;
         }
-        [cell.contentView addSubview:self.tableView];
-    }
-    self.tableView.frame = CGRectZero;
-    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.equalTo(@0);
-        make.width.height.equalTo(cell.contentView);
     }];
+    if (!hasContentView) {
+        if (self.createView) {
+            UIView *tableView = self.createView();
+            [cell.contentView addSubview:tableView];
+            tableView.frame = CGRectZero;
+            [tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.top.left.equalTo(@0);
+                make.width.height.equalTo(cell.contentView);
+            }];
+        }
+    }
+    
     return cell;
 }
 

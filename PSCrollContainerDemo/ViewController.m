@@ -7,12 +7,8 @@
 //
 
 #import "ViewController.h"
-#import "Masonry.h"
-#import "PScrollViewController.h"
-#import "ConfigObj.h"
-@interface ViewController ()<UITableViewDataSource, UITableViewDelegate>
-@property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) PScrollViewController *scrollContainer;
+#import "SecViewController.h"
+@interface ViewController ()
 @end
 
 @implementation ViewController
@@ -31,32 +27,8 @@
 }
 
 - (void)buttonDown {
-    self.scrollContainer = [[PScrollViewController alloc] initScrollEvent:^(NSInteger page) {
-        [self.tableView reloadData];
-    } createTableView:^{
-        self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-        [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cellID"];
-        self.tableView.delegate = self;
-        self.tableView.dataSource = self;
-        self.scrollContainer.tableView = self.tableView;
-    }];
-    self.scrollContainer.config = [[ConfigObj alloc] init];
-    [self.navigationController pushViewController:self.scrollContainer animated:YES];
-    
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 10;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 50;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cellID"];
-    cell.textLabel.text = [NSString stringWithFormat:@"index %@", @(indexPath.row)];
-    return cell;
+    SecViewController *vc = [[SecViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

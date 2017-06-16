@@ -7,37 +7,18 @@
 //
 
 #import "ConfigObj.h"
+#define RGBHex(rgbValue) \
+[UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0x00FF00) >>  8))/255.0 \
+blue:((float)((rgbValue & 0x0000FF) >>  0))/255.0 \
+alpha:1.0]
 @implementation ConfigObj
-- (NSArray<NSString *>*)scrollNavigationTitles {
-    return @[@"我关注的", @"最近下单",@"我看过的",@"粉丝",@"黑名单",@"我看过的",@"粉丝",@"黑名单"];
+- (NSArray<NSString *>*)categoryTitles {
+    return @[@"我关注的", @"最近下单",@"我看过的",@"粉丝",@"黑名单"];
 }
 
-- (CGFloat)topNavigationHeight {
-    return 46;
-}
-
-- (CGFloat)topLineHeight {
-    return 3;
-}
-
-- (UIColor*)topLineColor {
-    return [UIColor redColor];
-}
-
-- (NSString*)navigaitonBarTitle {
-    return @"通讯录";
-}
-
-- (CGFloat)stack_space {
-    return 25;
-}
-
-- (CGFloat)stack_left {
-    return 15;
-}
-
-- (CGFloat)stack_right {
-    return 15;
+- (NSInteger)selectPage {
+    return 0;
 }
 
 @end

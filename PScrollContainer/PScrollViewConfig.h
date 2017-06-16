@@ -7,88 +7,96 @@
 //
 #import <UIKit/UIKit.h>
 @protocol PScrollViewConfig <NSObject>
-@optional
 /**
- 顶部导航按钮列表
+ 顶部分类按钮列表
 
  @return array
  */
-- (NSArray<NSString *>*)scrollNavigationTitles;
+- (NSArray<NSString *>*)categoryTitles;
+
+@optional
 
 /**
- 顶部导航的高度
+ 默认选中状态, start from 0
+
+ @return 0
+ */
+- (NSInteger)selectPage;
+
+/**
+ 顶部分类的高度
 
  @return default 46
  */
-- (CGFloat)topNavigationHeight;
+- (CGFloat)categoryHeight;
 
 /**
- 顶部导航线的高度
+ 顶部高亮线的高度
  
  @return default 3
  */
-- (CGFloat)topLineHeight;
+- (CGFloat)highlightLineHeight;
 
 /**
- 顶部导航线的颜色
+ 顶部分类字体大小
  
- @return color
+ @return font
  */
-- (UIColor*)topLineColor;
-
-/**
- 导航栏title
-
- @return title
- */
-- (NSString*)navigaitonBarTitle;
+- (UIFont*)textFont;
 
 /**
 stackView 距离父视图左边距离
 
  @return 15
  */
-- (CGFloat)stack_left;
+- (CGFloat)left_margin;
 
 /**
  stackView 距离父视图右边距离
 
  @return 15
  */
-- (CGFloat)stack_right;
+- (CGFloat)right_margin;
 
 /**
  stackView 子视图间距
  @return 0
  */
-- (CGFloat)stack_space;
+- (CGFloat)gap_margin;
 
 /**
- 顶部导航字体大小
-
- @return font
- */
-- (UIFont*)topTitlesFont;
-
-/**
- 顶部导航字体颜色
-
+ 顶部分割线的颜色
+ 
  @return color
  */
-- (UIColor*)topTitlesFontColor;
+- (UIColor*)separateLineColor;
 
 /**
- 是否允许下拉刷新
+ 顶部分类字体颜色
+ 
+ @return color
+ */
+- (UIColor*)textNormalColor;
+
+/**
+ 顶部分类字体高亮颜色
+ 
+ @return color
+ */
+- (UIColor*)textHighLightColor;
+
+/**
+ 顶部状态线的颜色
+ 
+ @return color
+ */
+- (UIColor*)highlightLineColor;
+
+/**
+ 是否允许左右滑动
 
  @return default YES
  */
-- (BOOL)enablePullRefresh;
-
-/**
- 是否允许上拉刷新
-
- @return default YES
- */
-- (BOOL)enableUpRefresh;
+- (BOOL)enableScroll;
 
 @end
