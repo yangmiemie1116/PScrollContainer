@@ -15,7 +15,5 @@ Pod::Spec.new do |s|
   s.source_files = "PScrollContainer/*.{h,m}"
   s.requires_arc = true
   s.dependency 'Masonry'
-  s.dependency 'MJRefresh'
-  s.dependency 'UITableView+FDTemplateLayoutCell'
   s.dependency 'FDStackView'
 end
