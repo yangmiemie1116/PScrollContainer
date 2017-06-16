@@ -8,8 +8,8 @@
 
 #import "PScrollViewController.h"
 #import "Masonry.h"
-#define MicIphone6Width 375.0f
-#define RGBHex(rgbValue) \
+#define Iphone6Width_Sheep 375.0f
+#define RGB_Sheep(rgbValue) \
 [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
 green:((float)((rgbValue & 0x00FF00) >>  8))/255.0 \
 blue:((float)((rgbValue & 0x0000FF) >>  0))/255.0 \
@@ -28,7 +28,7 @@ alpha:1.0]
 
 CGFloat FitOut(CGFloat fitInput) {
     CGRect bounds = [[UIScreen mainScreen] bounds];
-    CGFloat multiple = bounds.size.width/MicIphone6Width;
+    CGFloat multiple = bounds.size.width/Iphone6Width_Sheep;
     return fitInput * multiple;
 }
 
@@ -87,7 +87,7 @@ CGFloat FitOut(CGFloat fitInput) {
     if ([self.config respondsToSelector:@selector(separatorColor)]) {
         self.bottomLine.backgroundColor = [self.config separateLineColor];
     } else {
-        self.bottomLine.backgroundColor = RGBHex(0xe5e5e5);
+        self.bottomLine.backgroundColor = RGB_Sheep(0xe5e5e5);
     }
     [self.view addSubview:self.bottomLine];
     [self.bottomLine mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -109,12 +109,12 @@ CGFloat FitOut(CGFloat fitInput) {
         } else {
             button.titleLabel.font = [UIFont systemFontOfSize:FitOut(14)];
         }
-        UIColor *normal = RGBHex(0x9b9b99);
+        UIColor *normal = RGB_Sheep(0x9b9b99);
         if ([self.config respondsToSelector:@selector(textNormalColor)]) {
             normal = [self.config textNormalColor];
         }
         if (idx == 0) {
-            normal = RGBHex(0x4c4c4c);
+            normal = RGB_Sheep(0x4c4c4c);
             if ([self.config respondsToSelector:@selector(textHighLightColor)]) {
                 normal = [self.config textHighLightColor];
             }
@@ -128,7 +128,7 @@ CGFloat FitOut(CGFloat fitInput) {
     }];
     UIButton *sub_button = self.stackView.arrangedSubviews[0];
     self.stateLine = [UIView new];
-    self.stateLine.backgroundColor = [self.config respondsToSelector:@selector(highlightLineColor)] ? [self.config highlightLineColor] : RGBHex(0xffdb4c);
+    self.stateLine.backgroundColor = [self.config respondsToSelector:@selector(highlightLineColor)] ? [self.config highlightLineColor] : RGB_Sheep(0xffdb4c);
     [self.topScrollView addSubview:self.stateLine];
     [self.stateLine mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(sub_button);
@@ -201,14 +201,14 @@ CGFloat FitOut(CGFloat fitInput) {
                 if ([self.config respondsToSelector:@selector(textNormalColor)]) {
                     [obj setTitleColor:[self.config textNormalColor] forState:UIControlStateNormal];
                 } else {
-                    [obj setTitleColor:RGBHex(0x9b9b99) forState:UIControlStateNormal];
+                    [obj setTitleColor:RGB_Sheep(0x9b9b99) forState:UIControlStateNormal];
                 }
             }];
             UIButton *now_button = self.stackView.arrangedSubviews[final_index];
             if ([self.config respondsToSelector:@selector(textHighLightColor)]) {
                 [now_button setTitleColor:[self.config textHighLightColor] forState:UIControlStateNormal];
             } else {
-                [now_button setTitleColor:RGBHex(0x4c4c4c) forState:UIControlStateNormal];
+                [now_button setTitleColor:RGB_Sheep(0x4c4c4c) forState:UIControlStateNormal];
             }
             CGFloat des_center = now_button.frame.origin.x - (self.view.center.x-now_button.frame.size.width/2)+self.stackView.frame.origin.x;
             CGFloat max_offset = self.topScrollView.contentSize.width - CGRectGetWidth(self.topScrollView.frame);
