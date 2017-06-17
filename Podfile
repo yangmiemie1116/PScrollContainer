@@ -2,6 +2,6 @@
 platform :ios, '8.0'
 
 target 'PSCrollContainerDemo' do
-pod 'PScrollContainer', :path=>'./'
+pod 'PScrollContainer'
 pod 'Reveal-SDK', :configurations => ['Debug']
 end

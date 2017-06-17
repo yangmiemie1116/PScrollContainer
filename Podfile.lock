@@ -1,25 +1,21 @@
 PODS:
   - FDStackView (1.0)
   - Masonry (1.0.2)
-  - PScrollContainer (0.0.3):
+  - PScrollContainer (0.0.4):
     - FDStackView
     - Masonry
   - Reveal-SDK (8)
 
 DEPENDENCIES:
-  - PScrollContainer (from `./`)
+  - PScrollContainer
   - Reveal-SDK
-
-EXTERNAL SOURCES:
-  PScrollContainer:
-    :path: ./
 
 SPEC CHECKSUMS:
   FDStackView: 3a4bbe0ce9c35e974246a585168b9da8c32213f1
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
-  PScrollContainer: 28f80eb03e82dbdd5ffccb009f73ad7092dd5ffd
+  PScrollContainer: 08968ff285c4a0cadbbbecd442a0b4d905b050d7
   Reveal-SDK: 43be4e662864e937960d0d04d005135e29c4e53b
 
-PODFILE CHECKSUM: bf5d6d51f8863f11e2679624f1dd1d20d5b2507d
+PODFILE CHECKSUM: 6e9002ae6735514c2deeaafa3b4701419fe437cc
 
 COCOAPODS: 1.2.1
