@@ -10,7 +10,9 @@ pod 'PScrollContainer'
 @property (nonatomic, copy) UITableView *_Nonnull(^ _Nullable createTableView)(NSInteger index);
 ```
 **config**是用来配置顶部分类的，**reloadData**是滑动过程中用来刷新数据的，**createTableView**是用来创建显示内容的tableView, 目前这个库的功能比较单一，后续会不断扩充
-#如何使用
+
+# 如何使用
+**需要通过addChildViewController的方式加入**
 ```
 PScrollViewController *scrollContainer = [[PScrollViewController alloc] init];
     scrollContainer.createTableView = ^UITableView * _Nonnull(NSInteger index) {
@@ -35,3 +37,9 @@ PScrollViewController *scrollContainer = [[PScrollViewController alloc] init];
     [self addChildViewController:scrollContainer];
     [self.view addSubview:scrollContainer.view];
 ```
+# 可能出现的问题
+如果UI显示出现问题可以使用
+```
+self.automaticallyAdjustsScrollViewInsets = NO;
+```
+
