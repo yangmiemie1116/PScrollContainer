@@ -7,8 +7,12 @@ PODS:
   - Reveal-SDK (8)
 
 DEPENDENCIES:
-  - PScrollContainer
+  - PScrollContainer (from `./`)
   - Reveal-SDK
+
+EXTERNAL SOURCES:
+  PScrollContainer:
+    :path: ./
 
 SPEC CHECKSUMS:
   FDStackView: 3a4bbe0ce9c35e974246a585168b9da8c32213f1
@@ -16,6 +20,6 @@ SPEC CHECKSUMS:
   PScrollContainer: 08968ff285c4a0cadbbbecd442a0b4d905b050d7
   Reveal-SDK: 43be4e662864e937960d0d04d005135e29c4e53b
 
-PODFILE CHECKSUM: 6e9002ae6735514c2deeaafa3b4701419fe437cc
+PODFILE CHECKSUM: 7f7ff98210f04acba694d28ed2f2c619f0fd437e
 
-COCOAPODS: 1.2.1
+COCOAPODS: 1.2.1.beta.1

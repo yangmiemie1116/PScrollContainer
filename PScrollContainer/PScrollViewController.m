@@ -113,7 +113,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         [button addTarget:self action:@selector(naviButtonDown:) forControlEvents:UIControlEventTouchUpInside];
         [self.stackView addArrangedSubview:button];
         [button mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.height.equalTo(self.topScrollView).offset(-lineHeight);
+            make.height.equalTo(self.topScrollView);
         }];
     }];
     UIButton *sub_button = self.stackView.arrangedSubviews[0];
