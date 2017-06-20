@@ -99,4 +99,11 @@ stackView 距离父视图左边距离
  */
 - (BOOL)enableScroll;
 
+/**
+ 设置collectionView的偏移时，是否animated
+
+ @return default YES
+ */
+- (BOOL)contentOffsetAnimation;
+
 @end

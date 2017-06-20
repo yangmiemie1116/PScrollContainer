@@ -151,11 +151,38 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }
     [self.view layoutIfNeeded];
     [self.collectionView setContentOffset:CGPointMake(page * self.collectionView.frame.size.width, 0)];
+    [self generateCellContent:0];
 }
 
 - (void)naviButtonDown:(UIButton*)button {
     NSInteger tag = button.tag;
-    [self.collectionView setContentOffset:CGPointMake(tag*self.collectionView.frame.size.width, 0) animated:YES];
+    BOOL animated = YES;
+    if ([self.config respondsToSelector:@selector(contentOffsetAnimation)]) {
+        animated = [self.config contentOffsetAnimation];
+    }
+    [self.collectionView setContentOffset:CGPointMake(tag*self.collectionView.frame.size.width, 0) animated:animated];
+    [self generateCellContent:tag];
+}
+
+- (void)generateCellContent:(NSInteger)index {
+    UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
+    __block BOOL hasContentView = NO;
+    [cell.contentView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([obj isKindOfClass:[UITableView class]]) {
+            hasContentView = YES;
+        }
+    }];
+    if (!hasContentView) {
+        if (self.createTableView) {
+            UITableView *tableView = self.createTableView(index);
+            [cell.contentView addSubview:tableView];
+            tableView.frame = CGRectZero;
+            [tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.top.left.equalTo(@0);
+                make.width.height.equalTo(cell.contentView);
+            }];
+        }
+    }
 }
 
 #pragma mark - scrollView delegate
@@ -178,13 +205,18 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         UIButton *next_button = self.stackView.arrangedSubviews[index+1];
         CGFloat center_offset = next_button.center.x - current_button.center.x;
         CGFloat width_offset = next_button.frame.size.width - current_button.frame.size.width;
+        [self.view layoutIfNeeded];
         [self.stateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(current_button).offset(center_offset*offset_percent);
             make.width.equalTo(@(current_button.frame.size.width+width_offset*offset_percent));
             make.height.equalTo(@(lineHeight));
             make.bottom.equalTo(self.topScrollView);
         }];
-        
+        if (![self.config contentOffsetAnimation]) {
+            [UIView animateWithDuration:0.2 animations:^{
+                [self.view layoutIfNeeded];
+            }];
+        }
         CGFloat mod = fmod(offset_x, self.view.frame.size.width);
         if (mod==0) {
             NSInteger final_index = offset_x / self.view.bounds.size.width;
@@ -215,6 +247,13 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }
 }
 
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    if (scrollView == self.collectionView) {
+        NSInteger final_index = scrollView.contentOffset.x / self.view.bounds.size.width;
+        [self generateCellContent:final_index];
+    }
+}
+
 #pragma mark - collectionView delegate && dataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return [self.config categoryTitles].count;
@@ -232,17 +271,6 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             }
         }
     }];
-    if (!hasContentView) {
-        if (self.createTableView) {
-            UITableView *tableView = self.createTableView(indexPath.row);
-            [cell.contentView addSubview:tableView];
-            tableView.frame = CGRectZero;
-            [tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.left.equalTo(@0);
-                make.width.height.equalTo(cell.contentView);
-            }];
-        }
-    }
     
     return cell;
 }
