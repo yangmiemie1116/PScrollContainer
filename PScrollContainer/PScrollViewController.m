@@ -161,7 +161,6 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         animated = [self.config contentOffsetAnimation];
     }
     [self.collectionView setContentOffset:CGPointMake(tag*self.collectionView.frame.size.width, 0) animated:animated];
-    [self generateCellContent:tag];
 }
 
 - (void)generateCellContent:(NSInteger)index {
@@ -245,14 +244,8 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             } else {
                 [self.topScrollView setContentOffset:CGPointMake(0, 0) animated:YES];
             }
+            [self generateCellContent:final_index];
         }
-    }
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    if (scrollView == self.collectionView) {
-        NSInteger final_index = scrollView.contentOffset.x / self.view.bounds.size.width;
-        [self generateCellContent:final_index];
     }
 }
 

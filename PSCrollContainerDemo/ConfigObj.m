@@ -21,4 +21,12 @@ alpha:1.0]
     return 0;
 }
 
+- (BOOL)enableScroll {
+    return NO;
+}
+
+- (BOOL)contentOffsetAnimation {
+    return NO;
+}
+
 @end
