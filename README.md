@@ -26,9 +26,6 @@ PScrollViewController *scrollContainer = [[PScrollViewController alloc] init];
         return tableView;
     };
     scrollContainer.reloadData = ^(UITableView * _Nonnull tableView, NSInteger index) {
-        **先清空重用之前的旧数据**
-        [self.dataArray removeAllObjects];
-        [tableView reloadData];
         **加载新的数据，刷新列表**
         self.dataArray = newData;
         [tableView reloadData];
