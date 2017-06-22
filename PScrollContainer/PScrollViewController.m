@@ -212,10 +212,12 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             make.height.equalTo(@(lineHeight));
             make.bottom.equalTo(self.topScrollView);
         }];
-        if (![self.config contentOffsetAnimation]) {
-            [UIView animateWithDuration:0.2 animations:^{
-                [self.view layoutIfNeeded];
-            }];
+        if ([self.config respondsToSelector:@selector(contentOffsetAnimation)]) {
+            if (![self.config contentOffsetAnimation]) {
+                [UIView animateWithDuration:0.2 animations:^{
+                    [self.view layoutIfNeeded];
+                }];
+            }
         }
         CGFloat mod = fmod(offset_x, self.view.frame.size.width);
         if (mod==0) {
