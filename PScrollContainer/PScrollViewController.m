@@ -161,6 +161,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         animated = [self.config contentOffsetAnimation];
     }
     [self.collectionView setContentOffset:CGPointMake(tag*self.collectionView.frame.size.width, 0) animated:animated];
+    [self generateCellContent:tag];
 }
 
 - (void)generateCellContent:(NSInteger)index {
@@ -172,11 +173,11 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         }
     }];
     if (!hasContentView) {
-        if (self.createTableView) {
-            UITableView *tableView = self.createTableView(index);
-            [cell.contentView addSubview:tableView];
-            tableView.frame = CGRectZero;
-            [tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        if (self.createContentView) {
+            UIView *contentView = self.createContentView(index);
+            [cell.contentView addSubview:contentView];
+            contentView.frame = CGRectZero;
+            [contentView mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.top.left.equalTo(@0);
                 make.width.height.equalTo(cell.contentView);
             }];
@@ -211,12 +212,10 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             make.height.equalTo(@(lineHeight));
             make.bottom.equalTo(self.topScrollView);
         }];
-        if ([self.config respondsToSelector:@selector(contentOffsetAnimation)]) {
-            if (![self.config contentOffsetAnimation]) {
-                [UIView animateWithDuration:0.2 animations:^{
-                    [self.view layoutIfNeeded];
-                }];
-            }
+        if (![self.config contentOffsetAnimation]) {
+            [UIView animateWithDuration:0.2 animations:^{
+                [self.view layoutIfNeeded];
+            }];
         }
         CGFloat mod = fmod(offset_x, self.view.frame.size.width);
         if (mod==0) {
@@ -244,8 +243,14 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             } else {
                 [self.topScrollView setContentOffset:CGPointMake(0, 0) animated:YES];
             }
-            [self generateCellContent:final_index];
         }
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    if (scrollView == self.collectionView) {
+        NSInteger final_index = scrollView.contentOffset.x / self.view.bounds.size.width;
+        [self generateCellContent:final_index];
     }
 }
 
@@ -257,13 +262,9 @@ CGFloat AdaptNorm(CGFloat fitInput) {
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(UICollectionViewCell.class) forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
-    __block BOOL hasContentView = NO;
     [cell.contentView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj isKindOfClass:[UITableView class]]) {
-            hasContentView = YES;
-            if (self.reloadData) {
-                self.reloadData(obj, indexPath.row);
-            }
+        if (self.reloadData) {
+            self.reloadData(obj, indexPath.row);
         }
     }];
     

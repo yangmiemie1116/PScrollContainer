@@ -24,27 +24,26 @@
     self.dataArray = [originArr[0] mutableCopy];
     self.view.backgroundColor = [UIColor whiteColor];
     self.automaticallyAdjustsScrollViewInsets = NO;
-    self.scrollContainer = [[PScrollViewController alloc] init];
-    __weak SecViewController *weakSelf = self;
-    self.scrollContainer.createTableView = ^UITableView * _Nonnull(NSInteger index) {
-        __strong SecViewController *strongSelf = weakSelf;
-        strongSelf.dataArray = [originArr[index] mutableCopy];
-        UITableView *tableView = [[UITableView alloc] initWithFrame:strongSelf.view.bounds style:UITableViewStylePlain];
+    PScrollViewController *scrollContainer = [[PScrollViewController alloc] init];
+    scrollContainer.createContentView = ^UIView * _Nonnull(NSInteger index) {
+        self.dataArray = [originArr[index] mutableCopy];
+        UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
         tableView.backgroundColor = [UIColor clearColor];
         [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cellID"];
-        tableView.delegate = strongSelf;
-        tableView.dataSource = strongSelf;
+        tableView.delegate = self;
+        tableView.dataSource = self;
         tableView.tableFooterView = [UIView new];
         return tableView;
     };
-    self.scrollContainer.reloadData = ^(UITableView * _Nonnull tableView, NSInteger index) {
-        __strong SecViewController *strongSelf = weakSelf;
-        strongSelf.dataArray = [originArr[index] mutableCopy];
-        [tableView reloadData];
+    scrollContainer.reloadData = ^(UIView * _Nonnull contentView, NSInteger index) {
+        self.dataArray = [originArr[index] mutableCopy];
+        if ([contentView isKindOfClass:[UITableView class]]) {
+            [(UITableView*)contentView reloadData];
+        }
     };
-    self.scrollContainer.config = [[ConfigObj alloc] init];
-    [self addChildViewController:self.scrollContainer];
-    [self.view addSubview:self.scrollContainer.view];
+    scrollContainer.config = [[ConfigObj alloc] init];
+    [self addChildViewController:scrollContainer];
+    [self.view addSubview:scrollContainer.view];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
