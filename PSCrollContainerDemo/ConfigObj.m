@@ -22,7 +22,7 @@ alpha:1.0]
 }
 
 - (BOOL)enableScroll {
-    return NO;
+    return YES;
 }
 
 - (BOOL)contentOffsetAnimation {

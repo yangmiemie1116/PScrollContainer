@@ -151,7 +151,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }
     [self.view layoutIfNeeded];
     [self.collectionView setContentOffset:CGPointMake(page * self.collectionView.frame.size.width, 0)];
-    [self generateCellContent:0];
+    [self generateCellContent:page];
 }
 
 - (void)naviButtonDown:(UIButton*)button {
@@ -161,17 +161,11 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         animated = [self.config contentOffsetAnimation];
     }
     [self.collectionView setContentOffset:CGPointMake(tag*self.collectionView.frame.size.width, 0) animated:animated];
-    [self generateCellContent:tag];
 }
 
 - (void)generateCellContent:(NSInteger)index {
     UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
-    __block BOOL hasContentView = NO;
-    [cell.contentView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj isKindOfClass:[UITableView class]]) {
-            hasContentView = YES;
-        }
-    }];
+    BOOL hasContentView = cell.contentView.subviews.count > 0;
     if (!hasContentView) {
         if (self.createContentView) {
             UIView *contentView = self.createContentView(index);
@@ -213,7 +207,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             make.bottom.equalTo(self.topScrollView);
         }];
         if (![self.config contentOffsetAnimation]) {
-            [UIView animateWithDuration:0.2 animations:^{
+            [UIView animateWithDuration:0.3 animations:^{
                 [self.view layoutIfNeeded];
             }];
         }
@@ -243,14 +237,8 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             } else {
                 [self.topScrollView setContentOffset:CGPointMake(0, 0) animated:YES];
             }
+            [self generateCellContent:final_index];
         }
-    }
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    if (scrollView == self.collectionView) {
-        NSInteger final_index = scrollView.contentOffset.x / self.view.bounds.size.width;
-        [self generateCellContent:final_index];
     }
 }
 
