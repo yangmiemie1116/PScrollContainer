@@ -260,12 +260,6 @@ CGFloat AdaptNorm(CGFloat fitInput) {
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(UICollectionViewCell.class) forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
-    [cell.contentView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (self.reloadData) {
-            self.reloadData(obj, indexPath.row);
-        }
-    }];
-    
     return cell;
 }
 
