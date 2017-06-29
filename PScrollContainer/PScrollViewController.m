@@ -164,6 +164,10 @@ CGFloat AdaptNorm(CGFloat fitInput) {
 }
 
 - (void)generateCellContent:(NSInteger)index {
+    BOOL animated = YES;
+    if ([self.config respondsToSelector:@selector(contentOffsetAnimation)]) {
+        animated = [self.config contentOffsetAnimation];
+    }
     UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
     BOOL hasContentView = cell.contentView.subviews.count > 0;
     if (!hasContentView) {
@@ -176,6 +180,12 @@ CGFloat AdaptNorm(CGFloat fitInput) {
                 make.width.height.equalTo(cell.contentView);
             }];
         }
+    } else if(!animated) {
+        [cell.contentView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (self.reloadData) {
+                self.reloadData(obj, index);
+            }
+        }];
     }
 }
 
