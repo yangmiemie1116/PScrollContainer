@@ -20,6 +20,7 @@ alpha:1.0]
 @property (nonatomic, strong) UIView *bottomLine;
 @property (nonatomic, strong) UIStackView *stackView;
 @property (nonatomic, strong) UIView *stateLine;
+@property (nonatomic, assign) BOOL isReloaded;
 @end
 
 @implementation PScrollViewController
@@ -145,13 +146,12 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         make.top.equalTo(self.topScrollView.mas_bottom);
         make.bottom.equalTo(self.view);
     }];
-    NSInteger page = 0;
+    NSInteger page = 2;
     if ([self.config respondsToSelector:@selector(selectPage)]) {
         page = [self.config selectPage] > ([self.config categoryTitles].count-1) ? 0 : [self.config selectPage];
     }
     [self.view layoutIfNeeded];
     [self.collectionView setContentOffset:CGPointMake(page * self.collectionView.frame.size.width, 0)];
-    [self generateCellContent:page];
 }
 
 - (void)naviButtonDown:(UIButton*)button {
@@ -163,33 +163,18 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     [self.collectionView setContentOffset:CGPointMake(tag*self.collectionView.frame.size.width, 0) animated:animated];
 }
 
-- (void)generateCellContent:(NSInteger)index {
-    BOOL animated = YES;
-    if ([self.config respondsToSelector:@selector(contentOffsetAnimation)]) {
-        animated = [self.config contentOffsetAnimation];
-    }
-    UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
-    BOOL hasContentView = cell.contentView.subviews.count > 0;
-    if (!hasContentView) {
-        if (self.createContentView) {
-            UIView *contentView = self.createContentView(index);
-            [cell.contentView addSubview:contentView];
-            contentView.frame = CGRectZero;
-            [contentView mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.left.equalTo(@0);
-                make.width.height.equalTo(cell.contentView);
-            }];
-        }
-    } else if(!animated) {
-        [cell.contentView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            if (self.reloadData) {
-                self.reloadData(obj, index);
-            }
-        }];
+
+#pragma mark - scrollView delegate
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    CGFloat offset_x = scrollView.contentOffset.x;
+    NSInteger index = offset_x / self.view.bounds.size.width;
+    if (index < 0) {
+        index = 0;
+    } else if (index >= [self.config categoryTitles].count-2) {
+        index = [self.config categoryTitles].count-2;
     }
 }
 
-#pragma mark - scrollView delegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (scrollView == self.collectionView) {
         CGFloat lineHeight = 3;
@@ -247,7 +232,6 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             } else {
                 [self.topScrollView setContentOffset:CGPointMake(0, 0) animated:YES];
             }
-            [self generateCellContent:final_index];
         }
     }
 }
@@ -260,6 +244,22 @@ CGFloat AdaptNorm(CGFloat fitInput) {
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(UICollectionViewCell.class) forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
+    BOOL hasContentView = cell.contentView.subviews.count > 0;
+    if (!hasContentView) {
+        if (self.createContentView) {
+            UIView *contentView = self.createContentView(indexPath.row);
+            [cell.contentView addSubview:contentView];
+            contentView.frame = CGRectZero;
+            [contentView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.top.left.equalTo(@0);
+                make.width.height.equalTo(cell.contentView);
+            }];
+        }
+    } else {
+        if (self.reloadData) {
+            self.reloadData(cell.contentView.subviews.firstObject, indexPath.row);
+        }
+    }
     return cell;
 }
 
