@@ -84,7 +84,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }];
     
     self.bottomLine = [UIView new];
-    if ([self.config respondsToSelector:@selector(separatorColor)]) {
+    if ([self.config respondsToSelector:@selector(separateLineColor)]) {
         self.bottomLine.backgroundColor = [self.config separateLineColor];
     } else {
         self.bottomLine.backgroundColor = RGB_Sheep(0xe5e5e5);
