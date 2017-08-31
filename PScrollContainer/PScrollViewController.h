@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PScrollViewConfig.h"
+@protocol PScrollViewConfig;
 @interface PScrollViewController : UIViewController
 @property (nonatomic, strong, nonnull) id<PScrollViewConfig> config;
 @property (nonatomic, copy) void(^ _Nullable reloadData)(UIView * _Nonnull contentView, NSInteger index);

@@ -8,6 +8,7 @@
 
 #import "PScrollViewController.h"
 #import "Masonry.h"
+#import "PScrollViewConfig.h"
 #define Iphone6Width_Sheep 375.0f
 #define RGB_Sheep(rgbValue) \
 [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
@@ -61,7 +62,15 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }
     self.stackView = [[UIStackView alloc] init];
     self.stackView.axis = UILayoutConstraintAxisHorizontal;
-    self.stackView.distribution = UIStackViewDistributionFillProportionally;
+    if ([self.config respondsToSelector:@selector(fillType)]) {
+        if ([self.config fillType] == 1) {
+            self.stackView.distribution = UIStackViewDistributionFillEqually;
+        } else {
+            self.stackView.distribution = UIStackViewDistributionFillProportionally;
+        }
+    } else {
+        self.stackView.distribution = UIStackViewDistributionFillProportionally;
+    }
     CGFloat gap = AdaptNorm(25);
     if ([self.config respondsToSelector:@selector(gap_margin)]) {
         gap = [self.config gap_margin];
@@ -151,6 +160,12 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         page = [self.config selectPage] > ([self.config categoryTitles].count-1) ? 0 : [self.config selectPage];
     }
     [self.view layoutIfNeeded];
+    NSInteger width = self.view.frame.size.width - self.stackView.frame.size.width - leftMargin - rightMargin;
+    if (width > 0) {
+        [self.stackView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.width.equalTo(@(self.view.frame.size.width- leftMargin - rightMargin));
+        }];
+    }
     [self.collectionView setContentOffset:CGPointMake(page * self.collectionView.frame.size.width, 0)];
 }
 

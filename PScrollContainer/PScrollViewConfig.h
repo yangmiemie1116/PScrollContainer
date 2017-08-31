@@ -6,6 +6,10 @@
 //  Copyright © 2017年 sheep. All rights reserved.
 //
 #import <UIKit/UIKit.h>
+typedef NS_ENUM(NSInteger, FillType) {
+    FillTypeEqually=1,       //根据frame均分
+    FillTypeProportionally //根据内容适配
+};
 @protocol PScrollViewConfig <NSObject>
 /**
  顶部分类按钮列表
@@ -22,6 +26,13 @@
  @return 0
  */
 - (NSInteger)selectPage;
+
+/**
+ 按钮填充方式
+ 
+ @return 0
+ */
+- (FillType)fillType;
 
 /**
  顶部分类的高度
