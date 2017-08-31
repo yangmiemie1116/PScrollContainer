@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "PScrollContainer"
-  s.version      = "0.1.3"
+  s.version      = "0.1.4"
   s.summary      = "左右滑动的容器"
   s.description  = <<-DESC
                    滑动容器
