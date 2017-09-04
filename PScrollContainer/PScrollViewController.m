@@ -203,13 +203,13 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         } else if (index >= [self.config categoryTitles].count-2) {
             index = [self.config categoryTitles].count-2;
         }
+        [self.view layoutIfNeeded];
         CGFloat relative_x = offset_x - index * self.view.bounds.size.width;
         CGFloat offset_percent = (CGFloat)(relative_x / self.view.bounds.size.width);
         UIButton *current_button = self.stackView.arrangedSubviews[index];
         UIButton *next_button = self.stackView.arrangedSubviews[index+1];
         CGFloat center_offset = next_button.center.x - current_button.center.x;
         CGFloat width_offset = next_button.frame.size.width - current_button.frame.size.width;
-        [self.view layoutIfNeeded];
         [self.stateLine mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.centerX.equalTo(current_button).offset(center_offset*offset_percent);
             make.width.equalTo(@(current_button.frame.size.width+width_offset*offset_percent));
