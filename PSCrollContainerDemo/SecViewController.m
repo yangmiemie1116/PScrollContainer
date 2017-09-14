@@ -41,6 +41,9 @@
             [(UITableView*)contentView reloadData];
         }
     };
+    scrollContainer.extendButtonAction = ^{
+        
+    };
     scrollContainer.config = [[ConfigObj alloc] init];
     [self addChildViewController:scrollContainer];
     [self.view addSubview:scrollContainer.view];

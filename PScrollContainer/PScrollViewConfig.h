@@ -117,4 +117,15 @@ stackView 距离父视图左边距离
  */
 - (BOOL)contentOffsetAnimation;
 
+/**
+ 分类导航条扩展按钮，展示在最右边
+ @return button
+ */
+- (UIButton*)extendButton;
+
+/**
+ 扩展按钮的宽度
+ @return width
+ */
+- (CGFloat)buttonWidth;
 @end

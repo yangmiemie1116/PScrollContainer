@@ -37,6 +37,12 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     [self setupView];
 }
 
+- (void)expendButtonDown {
+    if (self.extendButtonAction) {
+        self.extendButtonAction();
+    }
+}
+
 - (void)setupView {
     //MARK:init top category scrollView
     self.topScrollView = [[UIScrollView alloc] init];
@@ -51,6 +57,22 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         make.top.equalTo(@64);
         make.height.equalTo(@(scrollHeight));
     }];
+    UIButton *extendButton = nil;
+    CGFloat buttonWidth = 35;
+    if ([self.config respondsToSelector:@selector(extendButton)]) {
+        extendButton = [self.config extendButton];
+        [extendButton addTarget:self action:@selector(expendButtonDown) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:extendButton];
+        if ([self.config respondsToSelector:@selector(buttonWidth)]) {
+            buttonWidth = [self.config buttonWidth];
+        }
+        [extendButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.equalTo(self.view);
+            make.height.equalTo(self.topScrollView);
+            make.width.equalTo(@(buttonWidth));
+            make.top.equalTo(self.topScrollView);
+        }];
+    }
     
     CGFloat leftMargin = AdaptNorm(14);
     CGFloat rightMargin = AdaptNorm(14);
@@ -59,6 +81,9 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }
     if ([self.config respondsToSelector:@selector(right_margin)]) {
         rightMargin = [self.config right_margin];
+    }
+    if (extendButton) {
+        rightMargin += buttonWidth;
     }
     self.stackView = [[UIStackView alloc] init];
     self.stackView.axis = UILayoutConstraintAxisHorizontal;
