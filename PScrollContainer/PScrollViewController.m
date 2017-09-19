@@ -25,7 +25,7 @@ alpha:1.0]
 @end
 
 @implementation PScrollViewController
-
+@synthesize selectIndex = _selectIndex;
 CGFloat AdaptNorm(CGFloat fitInput) {
     CGRect bounds = [[UIScreen mainScreen] bounds];
     CGFloat multiple = bounds.size.width/Iphone6Width_Sheep;
@@ -41,6 +41,25 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     if (self.extendButtonAction) {
         self.extendButtonAction();
     }
+}
+
+- (CGFloat)contentWidth {
+    return self.topScrollView.contentSize.width;
+}
+
+- (NSInteger)selectIndex {
+    CGFloat offset_x = self.collectionView.contentOffset.x;
+    NSInteger index = offset_x / self.view.bounds.size.width;
+    return index;
+}
+
+- (void)setSelectIndex:(NSInteger)selectIndex {
+    _selectIndex = selectIndex;
+    BOOL animated = NO;
+    if ([self.config respondsToSelector:@selector(contentOffsetAnimation)]) {
+        animated = [self.config contentOffsetAnimation];
+    }
+    [self.collectionView setContentOffset:CGPointMake(selectIndex*self.collectionView.frame.size.width, 0) animated:animated];
 }
 
 - (void)setupView {

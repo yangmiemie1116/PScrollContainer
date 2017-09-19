@@ -24,29 +24,37 @@
     self.dataArray = [originArr[0] mutableCopy];
     self.view.backgroundColor = [UIColor whiteColor];
     self.automaticallyAdjustsScrollViewInsets = NO;
-    PScrollViewController *scrollContainer = [[PScrollViewController alloc] init];
-    scrollContainer.createContentView = ^UIView * _Nonnull(NSInteger index) {
-        self.dataArray = [originArr[index] mutableCopy];
-        UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    self.scrollContainer = [[PScrollViewController alloc] init];
+    __weak SecViewController *weakSelf = self;
+    self.scrollContainer.createContentView = ^UIView * _Nonnull(NSInteger index) {
+        weakSelf.dataArray = [originArr[index] mutableCopy];
+        UITableView *tableView = [[UITableView alloc] initWithFrame:weakSelf.view.bounds style:UITableViewStylePlain];
         tableView.backgroundColor = [UIColor clearColor];
         [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cellID"];
-        tableView.delegate = self;
-        tableView.dataSource = self;
+        tableView.delegate = weakSelf;
+        tableView.dataSource = weakSelf;
         tableView.tableFooterView = [UIView new];
         return tableView;
     };
-    scrollContainer.reloadData = ^(UIView * _Nonnull contentView, NSInteger index) {
-        self.dataArray = [originArr[index] mutableCopy];
+    self.scrollContainer.reloadData = ^(UIView * _Nonnull contentView, NSInteger index) {
+        weakSelf.dataArray = [originArr[index] mutableCopy];
         if ([contentView isKindOfClass:[UITableView class]]) {
             [(UITableView*)contentView reloadData];
         }
     };
-    scrollContainer.extendButtonAction = ^{
+    self.scrollContainer.extendButtonAction = ^{
         
     };
-    scrollContainer.config = [[ConfigObj alloc] init];
-    [self addChildViewController:scrollContainer];
-    [self.view addSubview:scrollContainer.view];
+    self.scrollContainer.config = [[ConfigObj alloc] init];
+    [self addChildViewController:self.scrollContainer];
+    [self.view addSubview:self.scrollContainer.view];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    CGFloat width = self.scrollContainer.contentWidth;
+    self.scrollContainer.selectIndex = 2;
+    NSInteger index = self.scrollContainer.selectIndex;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

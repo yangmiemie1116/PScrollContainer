@@ -12,7 +12,8 @@
 @property (nonatomic, strong, nonnull) id<PScrollViewConfig> config;
 @property (nonatomic, copy) void(^ _Nullable reloadData)(UIView * _Nonnull contentView, NSInteger index);
 @property (nonatomic, copy) UIView *_Nonnull(^ _Nullable createContentView)(NSInteger index);
-
+@property (nonatomic, assign) CGFloat contentWidth;//top scrollview contentsize
+@property (nonatomic, assign) NSInteger selectIndex;//选中的index
 /**
  扩展按钮点击事件
  */
