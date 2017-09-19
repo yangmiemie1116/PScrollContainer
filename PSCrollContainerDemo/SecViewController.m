@@ -52,9 +52,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    CGFloat width = self.scrollContainer.contentWidth;
-    self.scrollContainer.selectIndex = 2;
-    NSInteger index = self.scrollContainer.selectIndex;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

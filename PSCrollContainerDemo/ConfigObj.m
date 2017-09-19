@@ -21,6 +21,14 @@ alpha:1.0]
     return 0;
 }
 
+- (CGFloat)left_margin {
+    return 0;
+}
+
+- (CGFloat)right_margin {
+    return 0;
+}
+
 - (BOOL)enableScroll {
     return NO;
 }
@@ -29,4 +37,14 @@ alpha:1.0]
     return NO;
 }
 
+- (UIButton*)extendButton {
+    UIButton *butt = [UIButton buttonWithType:UIButtonTypeCustom];
+    butt.backgroundColor = [UIColor whiteColor];
+    [butt setImage:[UIImage imageNamed:@"cart_arrow_down_able"] forState:UIControlStateNormal];
+    return butt;
+}
+
+- (CGFloat)buttonWidth {
+    return 30;
+}
 @end

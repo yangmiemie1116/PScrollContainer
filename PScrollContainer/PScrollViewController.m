@@ -43,10 +43,6 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }
 }
 
-- (CGFloat)contentWidth {
-    return self.topScrollView.contentSize.width;
-}
-
 - (NSInteger)selectIndex {
     CGFloat offset_x = self.collectionView.contentOffset.x;
     NSInteger index = offset_x / self.view.bounds.size.width;
@@ -100,9 +96,6 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }
     if ([self.config respondsToSelector:@selector(right_margin)]) {
         rightMargin = [self.config right_margin];
-    }
-    if (extendButton) {
-        rightMargin += buttonWidth;
     }
     self.stackView = [[UIStackView alloc] init];
     self.stackView.axis = UILayoutConstraintAxisHorizontal;
@@ -204,6 +197,19 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         page = [self.config selectPage] > ([self.config categoryTitles].count-1) ? 0 : [self.config selectPage];
     }
     [self.view layoutIfNeeded];
+    if (self.topScrollView.contentSize.width > self.view.bounds.size.width) {
+        if (extendButton) {
+            extendButton.hidden = NO;
+            rightMargin += buttonWidth;
+            [self.stackView mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.right.equalTo(self.topScrollView).offset(-rightMargin);
+            }];
+        }
+    } else {
+        if (extendButton) {
+            extendButton.hidden = YES;
+        }
+    }
     NSInteger width = self.view.frame.size.width - self.stackView.frame.size.width - leftMargin - rightMargin;
     if (width > 0) {
         [self.stackView mas_updateConstraints:^(MASConstraintMaker *make) {
