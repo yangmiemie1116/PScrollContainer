@@ -225,6 +225,9 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     if ([self.config respondsToSelector:@selector(contentOffsetAnimation)]) {
         animated = [self.config contentOffsetAnimation];
     }
+    if (!animated) {
+        [self.collectionView reloadData];
+    }
     [self.collectionView setContentOffset:CGPointMake(tag*self.collectionView.frame.size.width, 0) animated:animated];
 }
 
