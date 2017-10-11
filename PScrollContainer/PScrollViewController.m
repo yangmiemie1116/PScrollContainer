@@ -67,6 +67,9 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     if ([self.config respondsToSelector:@selector(categoryHeight)]) {
         scrollHeight = [self.config categoryHeight];
     }
+    if ([self.config respondsToSelector:@selector(categoryBgColor)]) {
+        self.topScrollView.backgroundColor = [self.config categoryBgColor];
+    }
     [self.topScrollView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.equalTo(self.view);
         make.top.equalTo(@64);

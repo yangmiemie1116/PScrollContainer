@@ -104,6 +104,13 @@ stackView 距离父视图左边距离
 - (UIColor*)highlightLineColor;
 
 /**
+ 分类背景色
+
+ @return color
+ */
+- (UIColor*)categoryBgColor;
+
+/**
  是否允许左右滑动
 
  @return default YES
