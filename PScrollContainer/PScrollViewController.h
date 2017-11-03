@@ -17,4 +17,9 @@
  扩展按钮点击事件
  */
 @property (nonatomic, copy) void(^ _Nullable extendButtonAction)();
+
+/**
+ 每个title都可以设置一个未读消息数
+ */
+@property (nonatomic, strong) NSArray <NSString*>* _Nullable unreadCountArray;
 @end

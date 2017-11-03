@@ -70,9 +70,11 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     if ([self.config respondsToSelector:@selector(categoryBgColor)]) {
         self.topScrollView.backgroundColor = [self.config categoryBgColor];
     }
+    CGFloat statusHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    CGFloat naviHeight = self.navigationController.navigationBar.frame.size.height;
     [self.topScrollView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.equalTo(self.view);
-        make.top.equalTo(@64);
+        make.top.equalTo(@(statusHeight+naviHeight));
         make.height.equalTo(@(scrollHeight));
     }];
     UIButton *extendButton = nil;
@@ -165,6 +167,21 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         [button mas_makeConstraints:^(MASConstraintMaker *make) {
             make.height.equalTo(self.topScrollView);
         }];
+        UILabel *redLab = [UILabel new];
+        redLab.backgroundColor = [UIColor colorWithRed:1.000 green:0.310 blue:0.125 alpha:1.000];
+        [button addSubview:redLab];
+        redLab.layer.cornerRadius = 8;
+        redLab.textAlignment = NSTextAlignmentCenter;
+        redLab.font = [UIFont systemFontOfSize:13];
+        redLab.textColor = [UIColor whiteColor];
+        redLab.layer.masksToBounds = YES;
+        redLab.hidden = YES;
+        [redLab mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(button.titleLabel.mas_right);
+            make.top.equalTo(button.titleLabel).offset(-5);
+            make.width.equalTo(@22);
+            make.height.equalTo(@16);
+        }];
     }];
     UIButton *sub_button = self.stackView.arrangedSubviews[0];
     self.stateLine = [UIView new];
@@ -220,6 +237,46 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         }];
     }
     [self.collectionView setContentOffset:CGPointMake(page * self.collectionView.frame.size.width, 0)];
+}
+
+- (void)setUnreadCountArray:(NSArray *)unreadCountArray {
+    [self.stackView.arrangedSubviews enumerateObjectsUsingBlock:^(__kindof UIButton * _Nonnull button, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSArray *buttonSubs = button.subviews;
+        for (UILabel *unreadLab in buttonSubs) {
+            if ([unreadLab isMemberOfClass:[UILabel class]]) {
+                NSString *count = unreadCountArray[idx];
+                unreadLab.text = count;
+                if (count.integerValue == 0) {
+                    unreadLab.hidden = YES;
+                } else {
+                    unreadLab.hidden = NO;
+                }
+                if (count.integerValue > 99) {
+                    unreadLab.text = @"99+";
+                    [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
+                        make.left.equalTo(button.titleLabel.mas_right);
+                        make.top.equalTo(button.titleLabel).offset(-5);
+                        make.width.equalTo(@30);
+                        make.height.equalTo(@16);
+                    }];
+                } else if (count.integerValue >= 10) {
+                    [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
+                        make.left.equalTo(button.titleLabel.mas_right);
+                        make.top.equalTo(button.titleLabel).offset(-5);
+                        make.width.equalTo(@22);
+                        make.height.equalTo(@16);
+                    }];
+                } else {
+                    [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
+                        make.left.equalTo(button.titleLabel.mas_right);
+                        make.top.equalTo(button.titleLabel).offset(-5);
+                        make.width.equalTo(@16);
+                        make.height.equalTo(@16);
+                    }];
+                }
+            }
+        }
+    }];
 }
 
 - (void)naviButtonDown:(UIButton*)button {
