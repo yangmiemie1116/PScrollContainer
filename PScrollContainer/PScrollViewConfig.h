@@ -11,13 +11,6 @@ typedef NS_ENUM(NSInteger, FillType) {
     FillTypeProportionally //根据内容适配
 };
 @protocol PScrollViewConfig <NSObject>
-/**
- 顶部分类按钮列表
-
- @return array
- */
-- (NSArray<NSString *>*)categoryTitles;
-
 @optional
 
 /**
@@ -116,13 +109,6 @@ stackView 距离父视图左边距离
  @return default YES
  */
 - (BOOL)enableScroll;
-
-/**
- 设置collectionView的偏移时，是否animated
-
- @return default YES
- */
-- (BOOL)contentOffsetAnimation;
 
 /**
  分类导航条扩展按钮，展示在最右边

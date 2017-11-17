@@ -13,28 +13,29 @@ green:((float)((rgbValue & 0x00FF00) >>  8))/255.0 \
 blue:((float)((rgbValue & 0x0000FF) >>  0))/255.0 \
 alpha:1.0]
 @implementation ConfigObj
-- (NSArray<NSString *>*)categoryTitles {
-    return @[@"我关注的", @"最近下单",@"我看过的",@"粉丝",@"黑名单"];
-}
 
 - (NSInteger)selectPage {
     return 0;
 }
 
 - (CGFloat)left_margin {
-    return 0;
+    return 13;
 }
 
 - (CGFloat)right_margin {
-    return 0;
+    return 13;
 }
 
 - (BOOL)enableScroll {
     return NO;
 }
 
-- (BOOL)contentOffsetAnimation {
-    return NO;
+- (CGFloat)gap_margin {
+    return 15;
+}
+
+- (FillType)fillType {
+    return FillTypeProportionally;
 }
 
 - (UIButton*)extendButton {
