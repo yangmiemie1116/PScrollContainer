@@ -93,14 +93,14 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     if ([self.config respondsToSelector:@selector(categoryBgColor)]) {
         self.topScrollView.backgroundColor = [self.config categoryBgColor];
     }
-    self.topScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, scrollHeight)];
+    self.topScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, Sheep_NaviHeight, self.view.frame.size.width, scrollHeight)];
     self.topScrollView.showsHorizontalScrollIndicator = NO;
     [self.view addSubview:self.topScrollView];
     
     self.containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, scrollHeight)];
     [self.topScrollView addSubview:self.containerView];
     
-    self.bottomLine = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight(self.containerView.frame)-0.5, self.view.frame.size.width, 0.5)];
+    self.bottomLine = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.topScrollView.frame)-0.5, self.view.frame.size.width, 0.5)];
     if ([self.config respondsToSelector:@selector(separateLineColor)]) {
         self.bottomLine.backgroundColor = [self.config separateLineColor];
     } else {
@@ -152,30 +152,13 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         scrollHeight = [self.config categoryHeight];
     }
     CGFloat leftMargin = AdaptNorm(14);
-    CGFloat rightMargin = AdaptNorm(14);
     if ([self.config respondsToSelector:@selector(left_margin)]) {
         leftMargin = [self.config left_margin];
     }
-    if ([self.config respondsToSelector:@selector(right_margin)]) {
-        rightMargin = [self.config right_margin];
-    }
     if (preButton) {
-        [button mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self.containerView);
-            make.left.equalTo(preButton.mas_right).offset(gap_margin);
-            make.height.equalTo(@(scrollHeight));
-            make.width.equalTo(@(button_width));
-            if (index == [self.datasouce numberOfRows]-1) {
-                make.right.equalTo(self.containerView).offset(-rightMargin);
-            }
-        }];
+        button.frame = CGRectMake(CGRectGetMaxX(preButton.frame)+gap_margin, 0, button_width, scrollHeight);
     } else {
-        [button mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self.containerView);
-            make.left.equalTo(self.containerView).offset(leftMargin);
-            make.height.equalTo(@(scrollHeight));
-            make.width.equalTo(@(button_width));
-        }];
+        button.frame = CGRectMake(leftMargin, 0, button_width, scrollHeight);
     }
     UILabel *redLab = [self unreadLab];
     [button addSubview:redLab];
@@ -205,29 +188,22 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     } else {
         lineWidth = relativeButton.titleLabel.frame.size.width;
     }
-    self.stateLine.frame = CGRectMake(CGRectGetMinX(relativeButton.frame), CGRectGetHeight(self.topScrollView.frame)-lineHeight, lineWidth, lineHeight);
+    [UIView animateWithDuration:0.25 animations:^{
+        self.stateLine.frame = CGRectMake(CGRectGetMinX(relativeButton.frame), CGRectGetHeight(self.topScrollView.frame)-lineHeight, lineWidth, lineHeight);
+    }];
 }
 
 #pragma mark - 创建扩展按钮
 - (void)updateExpandButtonFrame {
-    CGFloat leftMargin = AdaptNorm(14);
-    CGFloat rightMargin = AdaptNorm(14);
     CGFloat extendWidth = 35;
-    if ([self.config respondsToSelector:@selector(left_margin)]) {
-        leftMargin = [self.config left_margin];
-    }
-    if ([self.config respondsToSelector:@selector(right_margin)]) {
-        rightMargin = [self.config right_margin];
-    }
     if ([self.config respondsToSelector:@selector(buttonWidth)]) {
         extendWidth = [self.config buttonWidth];
     }
     if (self.topScrollView.contentSize.width > self.view.bounds.size.width) {
         if (self.unfoldButton) {
             self.unfoldButton.hidden = NO;
-            rightMargin += extendWidth;
             CGRect oldContainerFrame = self.containerView.frame;
-            self.containerView.frame = CGRectMake(CGRectGetMinX(oldContainerFrame), CGRectGetMinY(oldContainerFrame), CGRectGetWidth(oldContainerFrame)-rightMargin, CGRectGetHeight(oldContainerFrame));
+            self.containerView.frame = CGRectMake(CGRectGetMinX(oldContainerFrame), CGRectGetMinY(oldContainerFrame), self.topScrollView.contentSize.width+extendWidth, CGRectGetHeight(oldContainerFrame));
         }
     } else {
         if (self.unfoldButton) {
@@ -323,6 +299,14 @@ CGFloat AdaptNorm(CGFloat fitInput) {
 #pragma mark - reloadData
 - (void)reloadContainer {
     [self.containerView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    CGFloat scrollHeight = AdaptNorm(46);
+    if ([self.config respondsToSelector:@selector(categoryHeight)]) {
+        scrollHeight = [self.config categoryHeight];
+    }
+    CGFloat rightMargin = AdaptNorm(14);
+    if ([self.config respondsToSelector:@selector(right_margin)]) {
+        rightMargin = [self.config right_margin];
+    }
     if ([self.datasouce respondsToSelector:@selector(numberOfRows)]) {
         NSInteger count = [self.datasouce numberOfRows];
         UIButton *preButton = nil;
@@ -330,12 +314,12 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             NSString *buttonTitle = [self.datasouce titleForRow:index];
             preButton = [self createClassifyButton:buttonTitle index:index preButton:preButton];
         }
+        self.topScrollView.contentSize = CGSizeMake(CGRectGetMaxX(preButton.frame)+rightMargin, scrollHeight);
     }
     if ([self.datasouce respondsToSelector:@selector(selectedIndex)]) {
         [self.collectionView setContentOffset:CGPointMake([self.datasouce selectedIndex] * self.collectionView.frame.size.width, 0)];
     }
     [self.view layoutIfNeeded];
-    self.topScrollView.contentSize = CGSizeMake(CGRectGetWidth(self.containerView.frame), CGRectGetHeight(self.containerView.frame));
     [self updateStatusLineFrame:self.containerView.subviews.firstObject];
     [self updateExpandButtonFrame];
     [self.collectionView reloadData];

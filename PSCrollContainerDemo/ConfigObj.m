@@ -27,7 +27,7 @@ alpha:1.0]
 }
 
 - (BOOL)enableScroll {
-    return NO;
+    return YES;
 }
 
 - (CGFloat)gap_margin {
