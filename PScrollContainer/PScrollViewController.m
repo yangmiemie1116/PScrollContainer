@@ -24,6 +24,8 @@ alpha:1.0]
 @property (nonatomic, strong) UIView *stateLine;
 @property (nonatomic, strong) UIButton *unfoldButton;
 @property (nonatomic, strong) UIView *containerView;
+@property (nonatomic, strong) NSMutableDictionary *registerViewDict;
+@property (nonatomic, strong) NSMutableDictionary *reuseViewDict;
 @end
 
 @implementation PScrollViewController
@@ -32,6 +34,15 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     CGRect bounds = [[UIScreen mainScreen] bounds];
     CGFloat multiple = bounds.size.width/Iphone6Width_Sheep;
     return fitInput * multiple;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.reuseViewDict = @{}.mutableCopy;
+        self.registerViewDict = @{}.mutableCopy;
+    }
+    return self;
 }
 
 - (void)viewDidLoad {
@@ -98,6 +109,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     [self.view addSubview:self.topScrollView];
     
     self.containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, scrollHeight)];
+    self.containerView.backgroundColor = [UIColor whiteColor];
     [self.topScrollView addSubview:self.containerView];
     
     self.bottomLine = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.topScrollView.frame)-0.5, self.view.frame.size.width, 0.5)];
@@ -162,17 +174,18 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }
     UILabel *redLab = [self unreadLab];
     [button addSubview:redLab];
-    [redLab mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(button.titleLabel.mas_right);
-        make.top.equalTo(button.titleLabel).offset(-5);
-        make.width.equalTo(@22);
-        make.height.equalTo(@16);
-    }];
+    if (self.unreadCountArray.count > index) {
+        NSString *text = self.unreadCountArray[index];
+        if (text.length > 0) {
+            redLab.text = text;
+            [self p_layoutUnreadLabel:redLab count:text.integerValue parent:button];
+        }
+    }
     return button;
 }
 
 #pragma mark - 更新状态线的frame
-- (void)updateStatusLineFrame:(UIButton*)relativeButton{
+- (void)updateStatusLineFrame:(UIButton*)relativeButton animated:(BOOL)animated {
     FillType fillType = FillTypeEqually;
     if ([self.config respondsToSelector:@selector(fillType)]) {
         fillType = [self.config fillType];
@@ -186,11 +199,15 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     if (fillType == FillTypeEqually) {
         lineWidth = self.view.frame.size.width / [self.datasouce numberOfRows];
     } else {
-        lineWidth = relativeButton.titleLabel.frame.size.width;
+        lineWidth = relativeButton.frame.size.width;
     }
-    [UIView animateWithDuration:0.25 animations:^{
+    if (animated) {
+        [UIView animateWithDuration:0.25 animations:^{
+            self.stateLine.frame = CGRectMake(CGRectGetMinX(relativeButton.frame), CGRectGetHeight(self.topScrollView.frame)-lineHeight, lineWidth, lineHeight);
+        }];
+    } else {
         self.stateLine.frame = CGRectMake(CGRectGetMinX(relativeButton.frame), CGRectGetHeight(self.topScrollView.frame)-lineHeight, lineWidth, lineHeight);
-    }];
+    }
 }
 
 #pragma mark - 创建扩展按钮
@@ -244,43 +261,56 @@ CGFloat AdaptNorm(CGFloat fitInput) {
 
 #pragma mark - 更新未读消息数
 - (void)setUnreadCountArray:(NSArray *)unreadCountArray {
+    _unreadCountArray = unreadCountArray;
+    [self p_updateUnread];
+}
+
+- (void)p_updateUnread {
     [self.containerView.subviews enumerateObjectsUsingBlock:^(__kindof UIButton * _Nonnull button, NSUInteger idx, BOOL * _Nonnull stop) {
         NSArray *buttonSubs = button.subviews;
         for (UILabel *unreadLab in buttonSubs) {
             if ([unreadLab isMemberOfClass:[UILabel class]]) {
-                NSString *count = unreadCountArray[idx];
-                unreadLab.text = count;
-                if (count.integerValue == 0) {
-                    unreadLab.hidden = YES;
-                } else {
-                    unreadLab.hidden = NO;
-                }
-                if (count.integerValue > 99) {
-                    unreadLab.text = @"99+";
-                    [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
-                        make.left.equalTo(button.titleLabel.mas_right);
-                        make.top.equalTo(button.titleLabel).offset(-5);
-                        make.width.equalTo(@30);
-                        make.height.equalTo(@16);
-                    }];
-                } else if (count.integerValue >= 10) {
-                    [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
-                        make.left.equalTo(button.titleLabel.mas_right);
-                        make.top.equalTo(button.titleLabel).offset(-5);
-                        make.width.equalTo(@22);
-                        make.height.equalTo(@16);
-                    }];
-                } else {
-                    [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
-                        make.left.equalTo(button.titleLabel.mas_right);
-                        make.top.equalTo(button.titleLabel).offset(-5);
-                        make.width.equalTo(@16);
-                        make.height.equalTo(@16);
-                    }];
+                if (self.unreadCountArray.count > idx) {
+                    NSString *count = self.unreadCountArray[idx];
+                    if (count.length > 0) {
+                        unreadLab.text = count;
+                        [self p_layoutUnreadLabel:unreadLab count:count.integerValue parent:button];
+                    }
                 }
             }
         }
     }];
+}
+
+- (void)p_layoutUnreadLabel:(UILabel*)unreadLab count:(NSInteger)count parent:(UIButton*)parent{
+    if (count == 0) {
+        unreadLab.hidden = YES;
+    } else {
+        unreadLab.hidden = NO;
+    }
+    if (count > 99) {
+        unreadLab.text = @"99+";
+        [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(parent.titleLabel.mas_right);
+            make.top.equalTo(parent.titleLabel).offset(-5);
+            make.width.equalTo(@30);
+            make.height.equalTo(@16);
+        }];
+    } else if (count >= 10) {
+        [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(parent.titleLabel.mas_right);
+            make.top.equalTo(parent.titleLabel).offset(-5);
+            make.width.equalTo(@22);
+            make.height.equalTo(@16);
+        }];
+    } else {
+        [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(parent.titleLabel.mas_right);
+            make.top.equalTo(parent.titleLabel).offset(-5);
+            make.width.equalTo(@16);
+            make.height.equalTo(@16);
+        }];
+    }
 }
 
 #pragma mark - 分类按钮点击事件
@@ -316,13 +346,14 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         }
         self.topScrollView.contentSize = CGSizeMake(CGRectGetMaxX(preButton.frame)+rightMargin, scrollHeight);
     }
-    if ([self.datasouce respondsToSelector:@selector(selectedIndex)]) {
-        [self.collectionView setContentOffset:CGPointMake([self.datasouce selectedIndex] * self.collectionView.frame.size.width, 0)];
+    NSInteger index = 0;
+    if ([self.datasouce respondsToSelector:@selector(defaultSelectedIndex)]) {
+        index = [self.datasouce defaultSelectedIndex];
     }
-    [self.view layoutIfNeeded];
-    [self updateStatusLineFrame:self.containerView.subviews.firstObject];
+    [self updateStatusLineFrame:self.containerView.subviews.firstObject animated:NO];
     [self updateExpandButtonFrame];
     [self.collectionView reloadData];
+    [self.collectionView setContentOffset:CGPointMake(index * self.collectionView.frame.size.width, 0)];
 }
 
 #pragma mark - scrollView delegate
@@ -336,7 +367,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             index = [self.datasouce numberOfRows]-1;
         }
         UIButton *current_button = self.containerView.subviews[index];
-        [self updateStatusLineFrame:current_button];
+        [self updateStatusLineFrame:current_button animated:YES];
         CGFloat mod = fmod(offset_x, self.view.frame.size.width);
         if (mod==0) {
             NSInteger final_index = offset_x / self.view.bounds.size.width;
@@ -367,7 +398,25 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }
 }
 
+- (void)registerClass:(Class)class reuseIdentifier:(NSString *)identify {
+    self.registerViewDict[NSStringFromClass(class)] = identify;
+}
+
+- (UIView*)dequeueReusableWithReuseIdentifier:(NSString *)identify {
+    UIView *reuseVuew = self.reuseViewDict[identify];
+    if ([reuseVuew isKindOfClass:[NSNull class]]) {
+        return nil;
+    }
+    return reuseVuew;
+}
+
 #pragma mark - collectionView delegate && dataSource
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+    if ([self.delegate respondsToSelector:@selector(willDisplayIndex:currentView:)]) {
+        [self.delegate willDisplayIndex:indexPath.row currentView:cell.contentView.subviews.firstObject];
+    }
+}
+
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return [self.datasouce numberOfRows];
 }
@@ -376,19 +425,29 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(UICollectionViewCell.class) forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
     BOOL hasContentView = cell.contentView.subviews.count > 0;
-    if (!hasContentView) {
-        if ([self.datasouce respondsToSelector:@selector(containerView:viewForRowAtIndex:)]) {
-            UIView *containerView = [self.datasouce containerView:collectionView viewForRowAtIndex:indexPath.row];
+    NSArray *registerKeys = self.registerViewDict.allKeys;
+    NSAssert(registerKeys.count>0, @"call registerClass: reuseIdentifier: ");
+    NSArray *registerValues = self.registerViewDict.allValues;
+    if (hasContentView) {
+        UIView *containerView = cell.contentView.subviews.firstObject;
+        NSString *classString = NSStringFromClass(containerView.class);
+        NSInteger index = [registerKeys indexOfObject:classString];
+        NSString *identify = [registerValues objectAtIndex:index];
+        self.reuseViewDict[identify] = cell.contentView.subviews.firstObject;
+    }
+    if ([self.datasouce respondsToSelector:@selector(scrollContainer:viewForRowAtIndex:)]) {
+        UIView *containerView = [self.datasouce scrollContainer:self viewForRowAtIndex:indexPath.row];
+        if (!hasContentView && containerView) {
+            NSString *classString = NSStringFromClass(containerView.class);
+            NSInteger index = [registerKeys indexOfObject:classString];
+            NSString *identify = [registerValues objectAtIndex:index];
+            self.reuseViewDict[identify] = [NSNull null];
             [cell.contentView addSubview:containerView];
             containerView.frame = CGRectZero;
             [containerView mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.top.left.equalTo(@0);
                 make.width.height.equalTo(cell.contentView);
             }];
-        }
-    } else {
-        if ([self.delegate respondsToSelector:@selector(reloadContainer:viewForRowAtIndex:)]) {
-            [self.delegate reloadContainer:cell.contentView.subviews.firstObject viewForRowAtIndex:indexPath.row];
         }
     }
     return cell;

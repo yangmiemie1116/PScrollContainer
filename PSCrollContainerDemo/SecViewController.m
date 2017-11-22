@@ -22,18 +22,20 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"通讯录";
-    self.titleArray = @[@"我关注的", @"最近下单",@"我看过的",@"粉丝",@"黑名单",@"黑名单",@"黑名单",@"黑名单",@"黑名单"];
+    self.titleArray = @[@"我关注的", @"最近下单",@"我看过的",@"粉丝",@"黑名单"];
     self.originArr = @[@[@"1",@"1",@"1",@"1",@"1"], @[@"2",@"2",@"2",@"2",@"2"], @[@"3",@"3",@"3",@"3",@"3"], @[@"4",@"4",@"4",@"4",@"4"], @[@"5",@"5",@"5",@"5",@"5"]];
     self.dataArray = self.originArr[0];
     self.view.backgroundColor = [UIColor whiteColor];
-    self.automaticallyAdjustsScrollViewInsets = NO;
+
     self.scrollContainer = [[PScrollViewController alloc] init];
+    self.scrollContainer.config = [[ConfigObj alloc] init];
     self.scrollContainer.delegate = self;
     self.scrollContainer.datasouce = self;
-    self.scrollContainer.config = [[ConfigObj alloc] init];
+    [self.scrollContainer registerClass:[UITableView class] reuseIdentifier:NSStringFromClass([UITableView class])];
     [self addChildViewController:self.scrollContainer];
     [self.view addSubview:self.scrollContainer.view];
     [self.scrollContainer reloadContainer];
+    self.scrollContainer.unreadCountArray = @[@"2", @"3", @"4"];
 }
 
 - (NSString*)titleForRow:(NSInteger)row {
@@ -44,25 +46,23 @@
     return self.titleArray.count;
 }
 
-- (NSInteger)selectedIndex {
+- (NSInteger)defaultSelectedIndex {
     return 0;
 }
 
-- (UIView*)containerView:(UICollectionView *)collectionView viewForRowAtIndex:(NSInteger)index {
-    self.dataArray = self.originArr[index];
+- (UIView*)scrollContainer:(PScrollViewController *)scrollContainer viewForRowAtIndex:(NSInteger)index {
     UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     tableView.backgroundColor = [UIColor clearColor];
     [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cellID"];
     tableView.delegate = self;
     tableView.dataSource = self;
     tableView.tableFooterView = [UIView new];
-    [tableView reloadData];
     return tableView;
 }
 
-- (void)reloadContainer:(UIView *)containerView viewForRowAtIndex:(NSInteger)index {
+- (void)willDisplayIndex:(NSInteger)index currentView:(UIView *)currentView {
     self.dataArray = self.originArr[index];
-    [(UITableView*)containerView reloadData];
+    [(UITableView*)currentView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

@@ -31,7 +31,7 @@ alpha:1.0]
 }
 
 - (CGFloat)gap_margin {
-    return 15;
+    return 20;
 }
 
 - (FillType)fillType {
