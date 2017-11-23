@@ -350,6 +350,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     if ([self.datasouce respondsToSelector:@selector(defaultSelectedIndex)]) {
         index = [self.datasouce defaultSelectedIndex];
     }
+    self.containerView.frame = CGRectMake(0, 0, self.topScrollView.contentSize.width, scrollHeight);
     [self updateStatusLineFrame:self.containerView.subviews.firstObject animated:NO];
     [self updateExpandButtonFrame];
     [self.collectionView reloadData];
@@ -429,22 +430,22 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     NSAssert(registerKeys.count>0, @"call registerClass: reuseIdentifier: ");
     NSArray *registerValues = self.registerViewDict.allValues;
     if (hasContentView) {
-        UIView *containerView = cell.contentView.subviews.firstObject;
-        NSString *classString = NSStringFromClass(containerView.class);
+        UIView *contentView = cell.contentView.subviews.firstObject;
+        NSString *classString = NSStringFromClass(contentView.class);
         NSInteger index = [registerKeys indexOfObject:classString];
         NSString *identify = [registerValues objectAtIndex:index];
         self.reuseViewDict[identify] = cell.contentView.subviews.firstObject;
     }
     if ([self.datasouce respondsToSelector:@selector(scrollContainer:viewForRowAtIndex:)]) {
-        UIView *containerView = [self.datasouce scrollContainer:self viewForRowAtIndex:indexPath.row];
-        if (!hasContentView && containerView) {
-            NSString *classString = NSStringFromClass(containerView.class);
+        UIView *contentView = [self.datasouce scrollContainer:self viewForRowAtIndex:indexPath.row];
+        if (!hasContentView && contentView) {
+            NSString *classString = NSStringFromClass(contentView.class);
             NSInteger index = [registerKeys indexOfObject:classString];
             NSString *identify = [registerValues objectAtIndex:index];
             self.reuseViewDict[identify] = [NSNull null];
-            [cell.contentView addSubview:containerView];
-            containerView.frame = CGRectZero;
-            [containerView mas_makeConstraints:^(MASConstraintMaker *make) {
+            [cell.contentView addSubview:contentView];
+            contentView.frame = CGRectZero;
+            [contentView mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.top.left.equalTo(@0);
                 make.width.height.equalTo(cell.contentView);
             }];
