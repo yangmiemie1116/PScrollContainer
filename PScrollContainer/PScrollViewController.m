@@ -220,7 +220,8 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         if (self.unfoldButton) {
             self.unfoldButton.hidden = NO;
             CGRect oldContainerFrame = self.containerView.frame;
-            self.containerView.frame = CGRectMake(CGRectGetMinX(oldContainerFrame), CGRectGetMinY(oldContainerFrame), self.topScrollView.contentSize.width+extendWidth, CGRectGetHeight(oldContainerFrame));
+            self.topScrollView.contentSize = CGSizeMake(self.topScrollView.contentSize.width+self.unfoldButton.frame.size.width+5, self.topScrollView.contentSize.height);
+            self.containerView.frame = CGRectMake(CGRectGetMinX(oldContainerFrame), CGRectGetMinY(oldContainerFrame), self.topScrollView.contentSize.width, CGRectGetHeight(oldContainerFrame));
         }
     } else {
         if (self.unfoldButton) {
