@@ -413,6 +413,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
 
 #pragma mark - collectionView delegate && dataSource
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+    [self p_cellConfig:cell indexPath:indexPath];
     if ([self.delegate respondsToSelector:@selector(willDisplayIndex:currentView:)]) {
         [self.delegate willDisplayIndex:indexPath.row currentView:cell.contentView.subviews.firstObject];
     }
@@ -425,6 +426,14 @@ CGFloat AdaptNorm(CGFloat fitInput) {
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(UICollectionViewCell.class) forIndexPath:indexPath];
     cell.backgroundColor = [UIColor clearColor];
+    return cell;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake(self.view.bounds.size.width, collectionView.frame.size.height);
+}
+
+- (void)p_cellConfig:(UICollectionViewCell*)cell indexPath:(NSIndexPath*)indexPath {
     BOOL hasContentView = cell.contentView.subviews.count > 0;
     NSArray *registerKeys = self.registerViewDict.allKeys;
     NSAssert(registerKeys.count>0, @"call registerClass: reuseIdentifier: ");
@@ -451,12 +460,8 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             }];
         }
     }
-    return cell;
 }
 
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(self.view.bounds.size.width, collectionView.frame.size.height);
-}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
 }
