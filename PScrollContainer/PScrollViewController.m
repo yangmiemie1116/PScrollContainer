@@ -178,7 +178,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
         NSString *text = self.unreadCountArray[index];
         if (text.length > 0) {
             redLab.text = text;
-            [self p_layoutUnreadLabel:redLab count:text.integerValue parent:button];
+            [self p_layoutUnreadLabel:redLab count:text parent:button];
         }
     }
     return button;
@@ -275,7 +275,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
                     NSString *count = self.unreadCountArray[idx];
                     if (count.length > 0) {
                         unreadLab.text = count;
-                        [self p_layoutUnreadLabel:unreadLab count:count.integerValue parent:button];
+                        [self p_layoutUnreadLabel:unreadLab count:count parent:button];
                     }
                 }
             }
@@ -283,13 +283,13 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     }];
 }
 
-- (void)p_layoutUnreadLabel:(UILabel*)unreadLab count:(NSInteger)count parent:(UIButton*)parent{
-    if (count == 0) {
+- (void)p_layoutUnreadLabel:(UILabel*)unreadLab count:(NSString*)count parent:(UIButton*)parent{
+    if ([count isEqualToString:@"0"]) {
         unreadLab.hidden = YES;
     } else {
         unreadLab.hidden = NO;
     }
-    if (count > 99) {
+    if (count.integerValue > 99) {
         unreadLab.text = @"99+";
         [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.equalTo(parent.titleLabel.mas_right);
@@ -297,18 +297,25 @@ CGFloat AdaptNorm(CGFloat fitInput) {
             make.width.equalTo(@30);
             make.height.equalTo(@16);
         }];
-    } else if (count >= 10) {
+    } else if (count.integerValue >= 10) {
         [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.equalTo(parent.titleLabel.mas_right);
             make.top.equalTo(parent.titleLabel).offset(-5);
             make.width.equalTo(@22);
             make.height.equalTo(@16);
         }];
-    } else {
+    } else if (count.integerValue < 10 && count.integerValue > 0) {
         [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
             make.left.equalTo(parent.titleLabel.mas_right);
             make.top.equalTo(parent.titleLabel).offset(-5);
             make.width.equalTo(@16);
+            make.height.equalTo(@16);
+        }];
+    } else {
+        [unreadLab mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(parent.titleLabel.mas_right);
+            make.top.equalTo(parent.titleLabel).offset(-5);
+            make.width.equalTo(@22);
             make.height.equalTo(@16);
         }];
     }
