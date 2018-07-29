@@ -104,7 +104,7 @@ CGFloat AdaptNorm(CGFloat fitInput) {
     if ([self.config respondsToSelector:@selector(categoryBgColor)]) {
         self.topScrollView.backgroundColor = [self.config categoryBgColor];
     }
-    self.topScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, Sheep_NaviHeight, self.view.frame.size.width, scrollHeight)];
+    self.topScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, scrollHeight)];
     self.topScrollView.showsHorizontalScrollIndicator = NO;
     [self.view addSubview:self.topScrollView];
     
