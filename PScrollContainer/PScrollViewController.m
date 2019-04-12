@@ -67,9 +67,6 @@ CGFloat AdaptNorm(CGFloat fitInput) {
 - (void)setSelectIndex:(NSInteger)selectIndex {
     _selectIndex = selectIndex;
     BOOL animated = NO;
-    if ([self.config respondsToSelector:@selector(enableScroll)]) {
-        animated = [self.config enableScroll];
-    }
     [self.collectionView setContentOffset:CGPointMake(selectIndex*self.collectionView.frame.size.width, 0) animated:animated];
 }
 
@@ -324,13 +321,8 @@ CGFloat AdaptNorm(CGFloat fitInput) {
 #pragma mark - 分类按钮点击事件
 - (void)naviButtonDown:(UIButton*)button {
     NSInteger tag = button.tag;
-    BOOL animated = YES;
-    if ([self.config respondsToSelector:@selector(enableScroll)]) {
-        animated = [self.config enableScroll];
-    }
-    if (!animated) {
-        [self.collectionView reloadData];
-    }
+    BOOL animated = NO;
+    [self.collectionView reloadData];
     [self.collectionView setContentOffset:CGPointMake(tag*self.collectionView.frame.size.width, 0) animated:animated];
 }
 
